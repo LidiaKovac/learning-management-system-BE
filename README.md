@@ -18,4 +18,8 @@ Here I am going to focus on SEQUELIZE and TypeScript, if you need help with expr
     - #### Setting up models: 
         - When setting up models you will need some imported types and some custom ones. 
         - The imported models are Sequelize, DataTypes and ModelDefined. This last type takes two parameters. 
-        - You will need two custom types for each model. You will need a ```*modelname*Attributes``` and a ```*modelname*CreationAttributes.``` 
+        - You will need two custom types for each model. You will need a ```*modelname*Attributes``` and a ```*modelname*CreationAttributes.``` The second one will extend the first one with the id value. Althought, you need the id value on the standard interface: 
+        ```js
+        export interface UserCreationAttributes extends Optional<UserAttributes, "user_id"> {
+}
+```

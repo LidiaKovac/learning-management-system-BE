@@ -6,3 +6,16 @@
 ---
 
 # Daily LOG on the [FRONTEND REPO](https://github.com/LidiaKovac/learning-management-system-FE)
+
+**:exclamation: When setting up a heroku postgres on PgAdmin remember to add the database name on the DB restriction, else you will get 1000+ databases on the list.** 
+
+## General advice if you are building a TS api using SEQUELIZE: 
+
+Here I am going to focus on SEQUELIZE and TypeScript, if you need help with express.js and typescript, here is [another repo](https://github.com/LidiaKovac/to-rain-or-not-to-rain-be)
+
+(Remember to run ```npx tsc --init```)
+- ### Basic setup: 
+    - #### Setting up models: 
+        - When setting up models you will need some imported types and some custom ones. 
+        - The imported models are Sequelize, DataTypes and ModelDefined. This last type takes two parameters. 
+        - You will need two custom types for each model. You will need a ```*modelname*Attributes``` and a ```*modelname*CreationAttributes.``` 

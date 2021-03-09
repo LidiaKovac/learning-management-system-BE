@@ -1,8 +1,31 @@
-import { Router } from "express" //imports Router type 
+import { Router } from "express";
+
 const { Sequelize } = require('sequelize');
+const endpoints = require("express-list-endpoints")
 const express = require('express')
 const cors = require('cors')
-const app = express()
-const {SQL_URI} = process.env
 
-const sequelize = new Sequelize(SQL_URI)
+const {PORT} = process.env
+
+const app = express()
+const db = require("./utils/config/db")
+
+app.use(cors())
+app.use(express.json())
+app.use(require("helmet")())
+
+const userRouter:Router =  require("./services/users")
+
+app.use("/user", userRouter)
+
+
+db.sequelize.sync({ force: false }).then((result:any) => {
+    app.listen(PORT, () => {
+      console.log(
+        "❗ Server is running on",
+        PORT,
+        " with these endpoints: ",
+        endpoints(app)
+      );
+    });
+  });

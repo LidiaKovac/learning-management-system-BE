@@ -22,7 +22,8 @@ class User extends Model {
 	}
 	email!:{
 		allowNull: false
-		type: string
+		type: string,
+		
 	}
 	password!:{
 		allowNull: false
@@ -64,6 +65,7 @@ class User extends Model {
 				email: {
 					type: STRING(100),
 					allowNull: false,
+					unique: true
 				},
 				password: {
 					type: STRING(30),

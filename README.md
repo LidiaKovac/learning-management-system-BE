@@ -14,14 +14,35 @@
 Here I am going to focus on SEQUELIZE and TypeScript, if you need help with express.js and typescript, here is [another repo](https://github.com/LidiaKovac/to-rain-or-not-to-rain-be)
 
 (Remember to run ```npx tsc --init```)
-- ### Basic setup: 
-    - #### Setting up models: 
-        - When setting up models you will need some imported types and some custom ones. 
-        - The imported models are Sequelize, DataTypes and ModelDefined. This last type takes two parameters. 
-        - You will need three custom types for each model. You will need a ```*modelname*Attributes```, a ```*modelname*CreationAttributes.```, and a ```*modelnameInstance``` The second one will extend the first one with the id value, and the third one will create a model that is basically what our class would be: 
-        ```js
-        export interface UserCreationAttributes extends Optional<UserAttributes, "user_id"> {}
-        ```
-        - Based on how you build models, you might need to change it a little bit: in my case, instead of passing DataTypes as a parameter, I imported it from sequelize. I did this because there is no collective type for the DataTypes objects. 
-        - The ModelDefined type, as said, takes two parameters, which are the two custom interfaces we did: ```ModelDefined<UserAttributes, UserCreationAttributes>```. 
-    - #### Setting up
+#### :exclamation: NOTE: I tried almost all the approaches I found on the internet. This is a fusion of 2/3 of them and the results of a whole morning of experiments. 
+ 
+#### Setting up models:
+
+**Main difference with regular JS approach**: relationships (which is really the main problem here) are not defined inside the model. 
+Instead of declaring the model straight away, we need to first declare a **class**. 
+*What is a class?* The class feature was introduced in ES6 and it's a "template" for an object. 
+:exclamation: **It's not an object!**
+
+Basically, if your class looks like this: 
+```js
+        class Car {
+  constructor(name, year) {
+    this.name = name;
+    this.year = year;
+  }
+}
+```
+or, like I did: 
+```js 
+        class Car {
+             name!: string
+             year!: string
+
+        }
+```
+...you can then call you class and create a new object like this: 
+```js 
+let my_car = new Car("Panda", "2014") 
+```
+The ! operator assures the compiler that the value exists (I think) and therefor we don't need constructors anymore. 
+        

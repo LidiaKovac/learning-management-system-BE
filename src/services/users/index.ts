@@ -4,6 +4,8 @@ import { Error } from "sequelize"
 import { ValidationErrorItem } from "sequelize"
 const user_router = require("express").Router()
 const ApiError = require("../../utils/interfaces")
+const bcryptjs = require("bcryptjs")
+const moment = require("moment")
 
 //ADMIN ROUTES: 
 user_router.get("/admin", async(req:Request,res:Response,next:NextFunction):Promise<void>=> {
@@ -46,7 +48,7 @@ user_router.get("/admin/:query/:identifier", async(req:Request, res:Response, ne
 //PUBLIC ROUTES
 user_router.post("/", async(req:Request, res:Response, next:NextFunction):Promise<void>=> {
     try {
-        const user = await User.create(req.body)
+        const user = await User.create({...req.body, password: await bcryptjs.hash(req.body.password, 10), birthday: moment(req.body.birthday) })
         res.status(201).send(user)
     } catch (e) {
         if (e.errors) {

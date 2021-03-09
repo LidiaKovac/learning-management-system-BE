@@ -68,7 +68,7 @@ class User extends Model {
 					unique: true
 				},
 				password: {
-					type: STRING(30),
+					type: STRING(200),
 					allowNull: false,
 				},
 				//------EXTRAS and SYS INFO--------

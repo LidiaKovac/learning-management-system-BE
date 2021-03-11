@@ -16,9 +16,11 @@ app.use(require("helmet")())
 
 const userRouter =  require("./services/users")
 const loginRouter = require("./services/login")
+const filesRouter = require("./services/files")
 
 app.use("/user", userRouter)
 app.use("/login", loginRouter)
+app.use("/files", filesRouter)
 
 
 db.sequelize.sync({ force: false }).then((result:any) => {

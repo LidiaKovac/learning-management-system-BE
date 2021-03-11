@@ -6,12 +6,12 @@ const login_router = require("express").Router()
 const bcryptjs = require("bcryptjs")
 const bcrypt = require("bcrypt")
 const moment = require("moment")
-import {cloudinaryMulter} from "../../utils/config/cloudinary"
+import {cloudinaryMulter_img} from "../../utils/config/cloudinary"
 import { authenticate, authorize } from "../../middlewares/auth"
 import { RequestWithUser } from "../../utils/interfaces"
 
 //PUBLIC ROUTES 
-login_router.post("/", cloudinaryMulter.single("profile_picture"), async(req:Request, res:Response, next:NextFunction):Promise<void>=> {
+login_router.post("/", cloudinaryMulter_img.single("profile_picture"), async(req:Request, res:Response, next:NextFunction):Promise<void>=> {
     try {
         console.log(req.files)
         const user = await User.create({...req.body, password: await bcryptjs.hash(req.body.password, 10), birthday: moment(req.body.birthday), profile_picture : req.file.path })

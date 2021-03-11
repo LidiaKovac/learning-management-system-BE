@@ -30,11 +30,7 @@ export const authorize = async (
     try {
             if (!req.headers.authorization) {
                 //if no auth is provided
-                const error = await new ApiError({
-                    status: 401,
-                    message: "Please provide an auth token",
-                })
-                throw error.response.status + " " + error.response.message
+                res.status(401).send("Please provide a token")
             } else {
 			const headers: IncomingHttpHeaders = req.headers
             
@@ -67,11 +63,7 @@ export const admin = async (
 		if (logged_user[0].role === "admin") {
 			next()
 		} else {
-			const error = await new ApiError({
-				status: 403,
-				message: "You are not allowed to access this resource.",
-			})
-			throw error.response.status + " " + error.response.message
+			res.status(403).send("You are not allowed to access this resource.")
 		}
 	} catch (e) {
 		next(e)
@@ -88,11 +80,7 @@ export const student = async (
 		if (logged_user[0].role === "student") {
             next()
 		} else {
-			const error = await new ApiError({
-				status: 403,
-				message: "You are not allowed to access this resource.",
-			})
-			throw error.response.status + " " + error.response.message
+			res.status(403).send("You are not allowed to access this resource.")
 		}
 	} catch (e) {
 		next(e)
@@ -109,11 +97,7 @@ export const teacher = async (
 		if (logged_user[0].role === "teacher") {
             next()
 		} else {
-			const error = await new ApiError({
-				status: 403,
-				message: "You are not allowed to access this resource.",
-			})
-			throw error.response.status + " " + error.response.message
+			res.status(403).send("You are not allowed to access this resource.")
 		}
 	} catch (e) {
 		next(e)

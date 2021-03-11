@@ -13,8 +13,7 @@ user_router.get("/admin", authorize, admin, async(req:Request,res:Response,next:
        if (userdata.length > 0) {
            res.status(200).send(userdata)
        } else {
-           const error = await new ApiError({status: 204, message: "No content"})
-           throw error.response.status + " " + error.response.message
+           res.send(204)
         }
        //} else {
        // throw 401
@@ -35,8 +34,7 @@ user_router.get("/admin/:query/:identifier", authorize, admin, async(req:Request
         if (userdata.length > 0) {
             res.status(200).send(userdata)
         } else {
-            const error = await new ApiError({status: 204, message: "No content"})
-            throw error.response.status + " " + error.response.message
+            res.send(204)
         }
     } catch (e) {
         next(e)
@@ -51,8 +49,7 @@ user_router.put("/admin/:id", authorize, admin, async(req:Request, res:Response,
         })
         if (edited_user[0] === 1) res.status(201).send("Updated") 
         else {
-            const error = await new ApiError({status: 304, message: `Not modified` })
-            throw error.response.status + " " + error.response.message
+            res.send(304)
         }
         res.send(edited_user)
     } catch (e) {
@@ -87,12 +84,10 @@ user_router.put("/me", authorize, async(req:RequestWithUser, res:Response, next:
             })
             if (edited_user[0] === 1) res.status(201).send("Updated") 
             else {
-                const error = await new ApiError({status: 304, message: `Not modified` })
-                throw error.response.status + " " + error.response.message
+                res.send(304)
             }
         } else {
-            const error = await new ApiError({status: 204, message: `User not found` })
-            throw error.response.status + " " + error.response.message 
+            res.status(400).send("You are not logged in")
         }
         
     } catch (e) {
@@ -110,12 +105,10 @@ user_router.delete("/me", authorize, async(req:RequestWithUser, res:Response, ne
             })
             if (deleted_user === 1) res.status(200).send("Deleted")
             else {
-                const error = await new ApiError({status: 204, message: `User not found` })
-                throw error.response.status + " " + error.response.message
+                res.status(204)
             }
         } else {
-            const error = await new ApiError({status: 400, message: `You are not logged in` })
-            throw error.response.status + " " + error.response.message 
+            res.status(400).send("You are not logged in")
         }
     } catch (e) {
         next(e)

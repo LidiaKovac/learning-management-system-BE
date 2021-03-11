@@ -21,11 +21,11 @@ login_router.post("/new", cloudinaryMulter_img.single("profile_picture"), async(
             const errors:Array<ValidationErrorItem> = e.errors
             errors.forEach(async error => {
                 if (error.type === "notNull Violation") {
-                    const notNull_error = await new ApiError({status: 400, message: `Missing ${error.path}`})
-                    next(notNull_error.response.status + " " + notNull_error.response.message)
+                    res.status(400).send(`Missing ${error.path}`)
+                    next(e)
                 } else if (error.type ==="unique violation") {
-                    const unique_error = await new ApiError({status: 400, message: `${error.path} already in use!` })
-                    next(unique_error.response.status + " " + unique_error.response.message)
+                    res.status(400).send(`${error.path} already in use!`)
+                    next(e)
                 }
             });
         }
@@ -51,12 +51,10 @@ login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promi
                    res.send("Logged in")
                }
                else {
-                const error = await new ApiError({status: 400, message: `Email or password not correct` })
-                next(error.response.status + " " + error.response.message)
+                   res.status(400).send("Wrong email or password")
                }
            } else {
-            const error = await new ApiError({status: 401, message: `Email doesn't exist in our database` })
-            next(error.response.status + " " + error.response.message)
+               res.status(401).send("Email doesn't exist in our database")
            }
        }
     } catch (e) {
@@ -77,9 +75,9 @@ login_router.get("/me", authorize, async(req:RequestWithUser, res:Response, next
 
 login_router.get("/logout", authorize, async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => {
     try {
-        res.clearCookie("user")
-        res.clearCookie("token")
-        res.send("Cookies cleared. ")
+        await res.clearCookie("user")
+        await res.clearCookie("token")
+        res.send("Cookies cleared.")
     } catch (e) {
         next(e)
     }

@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express"
 import { ValidationErrorItem } from "sequelize"
 import {
 	cloudinaryMulter_img,
-	cloudinaryMulter_video,
+	//cloudinaryMulter_video,
 	cloudinaryMulter_pdf,
 	cloudinaryMulter_audio,
 } from "../../utils/config/cloudinary"
@@ -25,7 +25,7 @@ files_router.get(
 			const files = await Files.findAll()
             if (files.length>0) {
                 res.status(200).send(files)
-            }
+            } else res.status(204)
 		} catch (e) {
 			next(e)
 		}

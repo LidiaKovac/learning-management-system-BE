@@ -11,7 +11,7 @@ import { authenticate, authorize } from "../../middlewares/auth"
 import { RequestWithUser } from "../../utils/interfaces"
 
 //PUBLIC ROUTES 
-login_router.post("/", cloudinaryMulter_img.single("profile_picture"), async(req:Request, res:Response, next:NextFunction):Promise<void>=> {
+login_router.post("/new", cloudinaryMulter_img.single("profile_picture"), async(req:Request, res:Response, next:NextFunction):Promise<void>=> {
     try {
         console.log(req.files)
         const user = await User.create({...req.body, password: await bcryptjs.hash(req.body.password, 10), birthday: moment(req.body.birthday), profile_picture : req.file.path })
@@ -33,7 +33,7 @@ login_router.post("/", cloudinaryMulter_img.single("profile_picture"), async(req
     }
 })
 
-login_router.get("/", async(req:Request, res:Response, next:NextFunction):Promise<void> => { 
+login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promise<void> => { 
     try {
        if (!req.body.email || !req.body.password || (!req.body.email && !req.body.password)) {
         const error = await new ApiError({status: 400, message: `Email or password not provided` })

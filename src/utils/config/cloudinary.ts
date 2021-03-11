@@ -40,7 +40,7 @@ export const cloudinaryMulter_img = multer({storage: storage_img });
 
 export const cloudinaryMulter_pdf = multer({storage: storage_pdf })
 
-export const cloudinaryMulter_video = multer({storage: storage_video })
+//export const cloudinaryMulter_video = multer({storage: storage_video })
 
 export const cloudinaryMulter_audio = multer({storage: storage_audio })
 

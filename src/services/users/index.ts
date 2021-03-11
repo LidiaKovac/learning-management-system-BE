@@ -114,7 +114,7 @@ user_router.delete("/me", authorize, async(req:RequestWithUser, res:Response, ne
                 throw error.response.status + " " + error.response.message
             }
         } else {
-            const error = await new ApiError({status: 204, message: `User not found` })
+            const error = await new ApiError({status: 400, message: `You are not logged in` })
             throw error.response.status + " " + error.response.message 
         }
     } catch (e) {

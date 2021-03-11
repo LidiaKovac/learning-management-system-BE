@@ -12,31 +12,12 @@ import  Material  from "./files"
 
 class User extends Model {
 	user_id!: number
-	name!:{
-		allowNull: false
-		type: string
-	}
-	last_name!:{
-		allowNull: false
-		type: string
-	}
-	email!:{
-		allowNull: false
-		type: string,
-		
-	}
-	password!:{
-		allowNull: false
-		type: string
-	}
-	role!:{
-		allowNull: false
-		type: string
-	}
-	pronouns!:{
-		allowNull: false
-		type: string
-	}
+	name!:string
+	last_name!:string
+	email!:string
+	password!:string
+	role!:string
+	pronouns!:string
 	birthday!: Date
 
 	createdAt!: Date
@@ -84,6 +65,10 @@ class User extends Model {
 					type: DATE,
 					allowNull: true,
 				},
+				profile_picture: {
+					type: STRING,
+					allowNull: true
+				}
 			},
 			{
 				sequelize :sequelize,

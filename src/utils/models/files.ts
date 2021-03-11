@@ -15,18 +15,9 @@ import User from "./user"
 
 class Material extends Model {
 	file_id!: number
-	name!: {
-		allowNull: true
-		type: string
-	}
-	type!: {
-		allowNull: false
-		type: string
-	}
-	description!: {
-		allowNull: false
-		type: string
-	}
+	name!: string
+	type!: string
+	description!: string
 
 	createdAt!: Date
 	updatedAd!: Date

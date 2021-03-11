@@ -1,10 +1,9 @@
 import  Material  from "../../models/files"
 import  User  from "../../models/user"
-
-const {
-	SQL_URI
-} = process.env
 const Sequelize = require("sequelize")
+
+let SQL_URI:String
+SQL_URI = process.env.SQL_URI!
 
 const sequelize = new Sequelize(SQL_URI, {
 	dialect: "postgres",

@@ -14,9 +14,11 @@ app.use(cors())
 app.use(express.json())
 app.use(require("helmet")())
 
-const userRouter:Router =  require("./services/users")
+const userRouter =  require("./services/users")
+const loginRouter = require("./services/login")
 
 app.use("/user", userRouter)
+app.use("/login", loginRouter)
 
 
 db.sequelize.sync({ force: false }).then((result:any) => {
@@ -29,3 +31,5 @@ db.sequelize.sync({ force: false }).then((result:any) => {
       );
     });
   });
+
+module.exports = app

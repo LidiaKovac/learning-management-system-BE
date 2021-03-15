@@ -49,6 +49,7 @@ export const authorize = async (
         }
 		} catch (e) {
 			next(e)
+			console.log(e)
 		}
 	}
 

@@ -36,8 +36,7 @@ login_router.post("/new", cloudinaryMulter_img.single("profile_picture"), async(
 login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promise<void> => { 
     try {
        if (!req.body.email || !req.body.password || (!req.body.email && !req.body.password)) {
-        const error = await new ApiError({status: 400, message: `Email or password not provided` })
-        next(error.response.status + " " + error.response.message)
+        res.status(400).send({message: "Email or password not provided"})
        } else {
            const found_user = await User.findAll({where: {
                email: req.body.email
@@ -47,14 +46,14 @@ login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promi
                if (is_correct) {
                    const token = await authenticate(found_user[0].user_id, found_user[0].birthday)
                    res.cookie("token", token)
-                   res.cookie("user", found_user[0].email)
-                   res.send("Logged in")
+                   res.cookie("user", found_user[0].email, {httpOnly: false})
+                   res.send({message: "Logged in"})
                }
                else {
-                   res.status(400).send("Wrong email or password")
+                   res.status(400).send({message: "Wrong email or password"})
                }
            } else {
-               res.status(401).send("Email doesn't exist in our database")
+               res.status(401).send({message: "Email doesn't exist in our database"})
            }
        }
     } catch (e) {

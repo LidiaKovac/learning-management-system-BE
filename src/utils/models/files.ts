@@ -11,8 +11,6 @@ import {
 	Association,
 } from "sequelize"
 
-import User from "./user"
-
 class Material extends Model {
 	file_id!: number
 	name!: string
@@ -21,7 +19,6 @@ class Material extends Model {
 
 	createdAt!: Date
 	updatedAd!: Date
-
 
 	static initialize(sequelize: Sequelize) {
 		this.init(

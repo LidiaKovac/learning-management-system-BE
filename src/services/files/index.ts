@@ -4,12 +4,13 @@ import { Request, Response, NextFunction } from "express"
 import { ValidationErrorItem } from "sequelize"
 import {
 	cloudinaryMulter_img,
-	//cloudinaryMulter_video,
+	cloudinaryMulter_video,
 	cloudinaryMulter_pdf,
 	cloudinaryMulter_audio,
 } from "../../utils/config/cloudinary"
 import { admin, authorize } from "../../middlewares/auth"
 import { RequestWithUser } from "../../utils/interfaces"
+import multer from "multer"
 
 const cloudinary = require("cloudinary").v2
 const ApiError = require("../../utils/interfaces")
@@ -41,13 +42,14 @@ files_router.post(
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
+		console.log(req.files)
 		try {
 			const new_file = await Files.create({
 				...req.body,
 				description: req.file.path,
 				UserUserId: req.user.user_id,
 			})
-			res.send(new_file.description)
+			res.send(new_file)
 		} catch (e) {
 			next(e)
 		}
@@ -74,29 +76,28 @@ files_router.post(
 				const errors: Array<ValidationErrorItem> = e.errors
 				errors.forEach(async (error) => {
 					if (error.type === "notNull Violation") {
-						const notNull_error = await new ApiError({
-							status: 400,
-							message: `Missing ${error.path}`,
-						})
-						next(
-							notNull_error.response.status +
-								" " +
-								notNull_error.response.message
-						)
+						res.status(400).send( `Missing ${error.path}`)
+						next(e)
 					} else if (error.type === "unique violation") {
-						const unique_error = await new ApiError({
-							status: 400,
-							message: `${error.path} already in use!`,
-						})
-						next(
-							unique_error.response.status + " " + unique_error.response.message
-						)
+						res.status(400).send(`${error.path} already in use!`)
+						next(e)
 					}
 				})
 			} else next(e)
 		}
 	}
 )
+files_router.post("/upload/video", authorize, cloudinaryMulter_video.single("video"), async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => {
+	try {
+
+			const new_file = await Files.create({...req.body, description: req.file.path, UserUserId: req.user.user_id })
+		  res.send(new_file)
+
+	 } catch (e) {
+	   next(e)
+   }
+  })
+  
 files_router.put(
 	"/:file_id",
 	authorize,
@@ -118,12 +119,10 @@ files_router.put(
                 })
                 if (edited_file[0] === 1) res.status(201).send("Updated")
                 else {
-                    const error = await new ApiError({ status: 304, message: `Not modified` })
-                    throw error.response.status + " " + error.response.message
+					res.status(304).send("Not modified")
                 }
             } else {
-                const error = await new ApiError({ status: 400, message: `This file doesn't exist or you are not allowed to modify it` })
-                    throw error.response.status + " " + error.response.message
+				res.status(400).send("This file doesn't exist or you are not allowed to modify it")
             }
         
         } catch (e) {
@@ -149,49 +148,38 @@ files_router.delete("/:file_id", authorize, async (
             })
             if (deleted_file === 1) res.status(200).send("Deleted")
             else {
-                const error = await new ApiError({status: 204, message: `File not found` })
-                throw error.response.status + " " + error.response.message
+				res.status(204)
             }
         } else {
-            const error = await new ApiError({ status: 400, message: `This file doesn't exist or you are not allowed to modify it` })
-                throw error.response.status + " " + error.response.message
+			res.status(400).send("This file doesn't exist or you are not allowed to modify it")
         }
     
     } catch (e) {
         next(e)
     }
 })
-//files_router.post("/upload/video", authorize, cloudinaryMulter_video.single("material"), async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => {
-//  try {
-//            console.log(req.body, req.file)
-//          const new_file = await Files.create({...req.body, description: req.file.path, UserUserId: req.user.user_id })
-//        res.send(new_file)
 
-//   } catch (e) {
-//     next(e)
-//   console.log(e)
-// }
-//})
-//files_router.post(
-//	"/upload/audio",
-//	authorize,
-//	cloudinaryMulter_audio.single("material"),
-//	async (
-//		req: RequestWithUser,
-//		res: Response,
-//		next: NextFunction
-//	): Promise<void> => {
-//		try {
-//			const new_file = await Files.create({
-//				...req.body,
-//				description: req.file.path,
-//				UserUserId: req.user.user_id,
-//			})
-//			res.send(new_file)
-//		} catch (e) {
-//			next(e)
-//		}
-//	}
-//)
+
+files_router.post(
+	"/upload/audio",
+	authorize,
+	cloudinaryMulter_audio.single("audio"),
+	async (
+		req: RequestWithUser,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			const new_file = await Files.create({
+				...req.body,
+				description: req.file.path,
+				UserUserId: req.user.user_id,
+			})
+			res.send(new_file)
+		} catch (e) {
+			next(e)
+		}
+	}
+)
 
 module.exports = files_router

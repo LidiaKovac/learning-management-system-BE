@@ -14,17 +14,17 @@ import { RequestWithUser } from "../../utils/interfaces"
 login_router.post("/new", cloudinaryMulter_img.single("profile_picture"), async(req:Request, res:Response, next:NextFunction):Promise<void>=> {
     try {
         console.log(req.files)
-        const user = await User.create({...req.body, password: await bcryptjs.hash(req.body.password, 10), birthday: moment(req.body.birthday), profile_picture : req.file.path })
-        res.status(201).send(user)
+        const user = await User.create({...req.body, password: await bcryptjs.hash(req.body.password, 10), birthday: moment(req.body.birthday), profile_picture : req.file ? req.file.path : "https://placehold.it/200x200" })
+        res.status(201).send({message: "Created", status: 201})
     } catch (e) {
         if (e.errors) {
             const errors:Array<ValidationErrorItem> = e.errors
             errors.forEach(async error => {
                 if (error.type === "notNull Violation") {
-                    res.status(400).send(`Missing ${error.path}`)
+                    res.status(400).send({message: `Missing ${error.path}`, status: 400})
                     next(e)
                 } else if (error.type ==="unique violation") {
-                    res.status(400).send(`${error.path} already in use!`)
+                    res.status(400).send({message: `${error.path} already in use!`, status: 400})
                     next(e)
                 }
             });

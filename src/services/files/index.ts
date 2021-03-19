@@ -1,20 +1,47 @@
-import User from "../../utils/models/user"
+//GLOBALS for FIREBASE
+;(global as any).XMLHttpRequest = require("xhr2")
+;(global as any).WebSocket = require("ws") 
+require("dotenv").config()
+
+//GENERAL
+const files_router = require("express").Router()
+
 import Files from "../../utils/models/files"
-import { Request, Response, NextFunction } from "express"
 import { ValidationErrorItem } from "sequelize"
-import {
-	cloudinaryMulter_img,
-	cloudinaryMulter_video,
-	cloudinaryMulter_pdf,
-	cloudinaryMulter_audio,
-} from "../../utils/config/cloudinary"
+
+import { Request, Response, NextFunction } from "express"
 import { admin, authorize } from "../../middlewares/auth"
 import { RequestWithUser } from "../../utils/interfaces"
-import multer from "multer"
 
-const cloudinary = require("cloudinary").v2
-const ApiError = require("../../utils/interfaces")
-const files_router = require("express").Router()
+//ENVIRONMENT
+const {
+	FIREBASE_API_KEY,
+	FIREBASE_AUTH_DOMAIN,
+	FIREBASE_PROJ_ID,
+	FIREBASE_BUCKET,
+	FIREBASE_MESSAGING_ID,
+	FIREBASE_APP_ID,
+	FIREBASE_MEASUREMENT_ID,
+} = process.env
+
+//FIREBASE / FILE UPLOAD
+import multer from "multer"
+import firebase from "firebase"
+import "firebase/storage"
+
+const firebaseConfig = {
+	apiKey: FIREBASE_API_KEY,
+	authDomain: FIREBASE_AUTH_DOMAIN,
+	projectId: FIREBASE_PROJ_ID,
+	storageBucket: FIREBASE_BUCKET,
+	messagingSenderId: FIREBASE_MESSAGING_ID,
+	appId: FIREBASE_APP_ID,
+	measurementId: FIREBASE_MEASUREMENT_ID,
+}
+
+firebase.initializeApp(firebaseConfig)
+
+
 
 //ADMIN ROUTES
 files_router.get(
@@ -24,80 +51,121 @@ files_router.get(
 	async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 		try {
 			const files = await Files.findAll()
-            if (files.length>0) {
-                res.status(200).send(files)
-            } else res.status(204)
+			if (files.length > 0) {
+				res.status(200).send(files)
+			} else res.status(204)
 		} catch (e) {
 			next(e)
 		}
 	}
 )
+
 //PUBLIC ROUTES
-files_router.post(
+files_router.post( 
 	"/upload/image",
 	authorize,
-	cloudinaryMulter_img.single("material"),
+	multer().single("material"),
 	async (
 		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
-		console.log(req.files)
 		try {
+			let ref = firebase.storage().ref()
+			let file_ref = ref.child(`/lms_images/${req?.file?.originalname}`)
+			let bytes = await new Uint8Array(req.file.buffer)
+			await file_ref.put(bytes) //don't need content type as I already tested it works without specifying
 			const new_file = await Files.create({
 				...req.body,
-				description: req.file.path,
-				UserUserId: req.user.user_id,
+				description: await file_ref.getDownloadURL(),
+				UserUserId: req.user.user_id
 			})
-			res.send(new_file)
+			res.status(201).send({status: 201, path: new_file.description})
 		} catch (e) {
 			next(e)
 		}
 	}
 )
+
 files_router.post(
 	"/upload/pdf",
 	authorize,
-	cloudinaryMulter_pdf.single("material"),
+	multer().single("material"),
 	async (
 		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
+			let ref = firebase.storage().ref()
+			//file_ref creates a ref for the file and the folder it's going to be uploaded in
+			let file_ref = ref.child(`/lms_pdf/${req?.file?.originalname}`)
+			let bytes = await new Uint8Array(req.file.buffer) //creates a byte array
+			await file_ref
+				.put(bytes, { contentType: "application/pdf" }) //IMPORTANT
 			const new_file = await Files.create({
 				...req.body,
-				description: req.file.path,
-				UserUserId: req.user.user_id,
+				description: await file_ref.getDownloadURL(),
+				UserUserId: req.user.user_id
 			})
-			res.status(201).send(new_file)
+			res.status(201).send({status: 201, path: new_file.description})
 		} catch (e) {
-			if (e.errors) {
-				const errors: Array<ValidationErrorItem> = e.errors
-				errors.forEach(async (error) => {
-					if (error.type === "notNull Violation") {
-						res.status(400).send( `Missing ${error.path}`)
-						next(e)
-					} else if (error.type === "unique violation") {
-						res.status(400).send(`${error.path} already in use!`)
-						next(e)
-					}
-				})
-			} else next(e)
+			next(e)
 		}
 	}
 )
-files_router.post("/upload/video", authorize, cloudinaryMulter_video.single("video"), async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => {
-	try {
+files_router.post(
+	"/upload/video",
+	authorize,
+	multer().single("material"),
+	async (
+		req: RequestWithUser,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			let ref = firebase.storage().ref()
+			let file_ref = ref.child(`/lms_videos/${req?.file?.originalname}`)
+			let bytes = await new Uint8Array(req.file.buffer)
+			await file_ref.put(bytes) //don't need content type as I already tested it works without specifying
+			const new_file = await Files.create({
+				...req.body,
+				description: await file_ref.getDownloadURL(),
+				UserUserId: req.user.user_id
+			})
+			res.status(201).send({status: 201, path: new_file.description})
+		} catch (e) {
+			next(e)
+		}
+	}
+)
+files_router.post(
+	"/upload/audio",
+	authorize,
+	multer().single("material"),
+	async (
+		req: RequestWithUser,
+		res: Response,
+		next: NextFunction
+	): Promise<void> => {
+		try {
+			let ref = firebase.storage().ref()
+			let file_ref = ref.child(`/lms_audios/${req?.file?.originalname}`)
+			let bytes = await new Uint8Array(req.file.buffer)
+			await file_ref.put(bytes) //don't need content type as I already tested it works without specifying
+			const new_file = await Files.create({
+				...req.body,
+				description: await file_ref.getDownloadURL(),
+				UserUserId: req.user.user_id
+			})
+			res.status(201).send({status: 201, path: new_file.description})
+		} catch (e) {
+			next(e)
+		}
+	}
+)
 
-			const new_file = await Files.create({...req.body, description: req.file.path, UserUserId: req.user.user_id })
-		  res.send(new_file)
 
-	 } catch (e) {
-	   next(e)
-   }
-  })
-  
 files_router.put(
 	"/:file_id",
 	authorize,
@@ -106,80 +174,68 @@ files_router.put(
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
-        try {
-            const file = await Files.findAll({where: {
-                file_id: req.params.file_id,
-                UserUserId: req.cookies.user.user_id
-            }})
-            if (file.length>0) {
-                const edited_file = await Files.update(req.body, {
-                    where: {
-                        file_id: req.params.file_id,
-                    },
-                })
-                if (edited_file[0] === 1) res.status(201).send("Updated")
-                else {
+		try {
+			const file = await Files.findAll({
+				where: {
+					file_id: req.params.file_id,
+					UserUserId: req.cookies.user.user_id,
+				},
+			})
+			if (file.length > 0) {
+				const edited_file = await Files.update(req.body, {
+					where: {
+						file_id: req.params.file_id,
+					},
+				})
+				if (edited_file[0] === 1) res.status(201).send("Updated")
+				else {
 					res.status(304).send("Not modified")
-                }
-            } else {
-				res.status(400).send("This file doesn't exist or you are not allowed to modify it")
-            }
-        
-        } catch (e) {
-            next(e)
-        }
-    }
+				}
+			} else {
+				res
+					.status(400)
+					.send("This file doesn't exist or you are not allowed to modify it")
+			}
+		} catch (e) {
+			next(e)
+		}
+	}
 )
-files_router.delete("/:file_id", authorize, async (
-    req: RequestWithUser,
-    res: Response,
-    next: NextFunction
-): Promise<void> => {
-    try {
-        const file = await Files.findAll({where: {
-            file_id: req.params.file_id,
-            UserUserId: req.cookies.user.user_id
-        }})
-        if (file.length>0) {
-            const deleted_file = await Files.destroy({
-                where: {
-                    file_id: req.params.file_id,
-                },
-            })
-            if (deleted_file === 1) res.status(200).send("Deleted")
-            else {
-				res.status(204)
-            }
-        } else {
-			res.status(400).send("This file doesn't exist or you are not allowed to modify it")
-        }
-    
-    } catch (e) {
-        next(e)
-    }
-})
-
-
-files_router.post(
-	"/upload/audio",
+files_router.delete(
+	"/:file_id",
 	authorize,
-	cloudinaryMulter_audio.single("audio"),
 	async (
 		req: RequestWithUser,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const new_file = await Files.create({
-				...req.body,
-				description: req.file.path,
-				UserUserId: req.user.user_id,
+			const file = await Files.findAll({
+				where: {
+					file_id: req.params.file_id,
+					UserUserId: req.cookies.user.user_id,
+				},
 			})
-			res.send(new_file)
+			if (file.length > 0) {
+				const deleted_file = await Files.destroy({
+					where: {
+						file_id: req.params.file_id,
+					},
+				})
+				if (deleted_file === 1) res.status(200).send("Deleted")
+				else {
+					res.status(204)
+				}
+			} else {
+				res
+					.status(400)
+					.send("This file doesn't exist or you are not allowed to modify it")
+			}
 		} catch (e) {
 			next(e)
 		}
 	}
 )
+
 
 module.exports = files_router

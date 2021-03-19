@@ -1,9 +1,9 @@
+require("dotenv").config()
 import  Material  from "../../models/files"
 import  User  from "../../models/user"
 const Sequelize = require("sequelize")
+const {SQL_URI} = process.env
 
-let SQL_URI:String
-SQL_URI = process.env.SQL_URI!
 
 const sequelize = new Sequelize(SQL_URI, {
 	dialect: "postgres",
@@ -22,6 +22,8 @@ models.forEach((model) => {
 
 Material.belongsTo(User)
 User.hasMany(Material)
+
+
 
 
 module.exports = sequelize

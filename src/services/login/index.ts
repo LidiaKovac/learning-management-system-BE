@@ -1,7 +1,6 @@
 import  User  from "../../utils/models/user"
 import {Request, Response, NextFunction} from "express"
 import { ValidationErrorItem } from "sequelize"
-const ApiError = require("../../utils/interfaces")
 const login_router = require("express").Router()
 const bcryptjs = require("bcryptjs")
 const bcrypt = require("bcrypt")

@@ -64,8 +64,12 @@ login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promi
 
 login_router.get("/me", authorize, async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => { //gets logged in user's info
     try {
-        const logged_user = await User.findByPk(req.user.user_id)
-        res.send(logged_user)
+        if (req?.user?.user_id) {
+
+            const logged_user = await User.findByPk(req.user.user_id!) //user_id can be null not so ! must be there
+            if (logged_user) res.status(200).send({message: logged_user})
+            else res.status(404).send({message: "User not found."})
+        } else res.status(401).send({message: "Please login first."})
     } catch (e) {
         next(e)
     }

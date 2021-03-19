@@ -21,8 +21,9 @@ export class ApiError extends Error {
 //AUTH
 
 export type DecodedToken = {
-	user_id: number
-	birthday: Date
+	user_id: number | null
+	birthday: Date | null
+	status: string
 }
 
 export interface RequestWithUser extends Request {
@@ -30,4 +31,6 @@ export interface RequestWithUser extends Request {
 	user: DecodedToken
 }
 
-module.exports = ApiError
+export interface CustomError {
+	message: String
+}

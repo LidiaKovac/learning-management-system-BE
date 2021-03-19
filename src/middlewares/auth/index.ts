@@ -5,7 +5,7 @@ import User from "../../utils/models/user"
 
 import { Request, Response, NextFunction } from "express"
 import { IncomingHttpHeaders } from "http"
-import { DecodedToken, RequestWithUser } from "../../utils/interfaces"
+import { DecodedToken, RequestWithUser, CustomError } from "../../utils/interfaces"
 import { verifyJWT, generateJWT } from "../../utils/tools/auth"
 
 //how to use: 
@@ -15,8 +15,9 @@ import { verifyJWT, generateJWT } from "../../utils/tools/auth"
 
 export const authenticate = async(user_id:number, birthday:Date) => {
     try {
-        const new_token:String = await generateJWT({user_id, birthday})
-        return new_token
+		if( user_id && birthday)
+        {const new_token:String = await generateJWT({user_id, birthday})
+        return new_token } else return new Error("Please login again")
     } catch (e) {
         console.log(e)
     }
@@ -35,17 +36,19 @@ export const authorize = async (
 			const headers: IncomingHttpHeaders = req.headers
             
 			const token:String = await headers.authorization?.replace("Bearer ", "")!
-			const decoded:DecodedToken = await verifyJWT(token)
-			const user = await User.findAll({
-				where: { user_id: decoded.user_id },
-			})
-
-			if (!user) {
-				throw new Error("User not found")
-			}
-			res.cookie("token", token) //add secure: true when deploying
-			req.user = {user_id: user[0].user_id, birthday: user[0].birthday}
-			next()
+			const decoded = await verifyJWT(token)
+			if (decoded.user_id) {
+				const user = await User.findAll({
+					where: { user_id: decoded.user_id },
+				})
+	
+				if (!user) {
+					throw new Error("User not found")
+				}
+				res.cookie("token", token) //add secure: true when deploying
+				req.user = {user_id: user[0].user_id, birthday: user[0].birthday, status: "succ"}
+				next()
+			} else res.status(401).send({message:decoded.status})
         }
 		} catch (e) {
 			next(e)
@@ -60,12 +63,14 @@ export const admin = async (
 	next: NextFunction
 ) => {
 	try {
-        const logged_user = await User.findAll({where: {user_id: req.user.user_id}})
-		if (logged_user[0].role === "admin") {
-			next()
-		} else {
-			res.status(403).send("You are not allowed to access this resource.")
-		}
+		if (req?.user?.user_id) {
+			const logged_user = await User.findAll({where: {user_id: req.user.user_id}})
+			if (logged_user[0].role === "admin") {
+				next()
+			} else {
+				res.status(403).send("You are not allowed to access this resource.")
+			}
+		} else res.status(401).send("You must be logged in")
 	} catch (e) {
 		next(e)
 	}
@@ -77,12 +82,14 @@ export const student = async (
 	next: NextFunction
 ) => {
 	try {
-		const logged_user = await User.findAll({where: {user_id: req.user.user_id}})
-		if (logged_user[0].role === "student") {
-            next()
-		} else {
-			res.status(403).send("You are not allowed to access this resource.")
-		}
+		if (req?.user?.user_id) {
+			const logged_user = await User.findAll({where: {user_id: req.user.user_id}})
+			if (logged_user[0].role === "student") {
+				next()
+			} else {
+				res.status(403).send("You are not allowed to access this resource.")
+			}
+		} else res.status(401).send("You must be logged in")
 	} catch (e) {
 		next(e)
 	}

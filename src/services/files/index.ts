@@ -7,7 +7,6 @@ require("dotenv").config()
 const files_router = require("express").Router()
 
 import Files from "../../utils/models/files"
-import { ValidationErrorItem } from "sequelize"
 
 import { Request, Response, NextFunction } from "express"
 import { admin, authorize } from "../../middlewares/auth"
@@ -61,6 +60,18 @@ files_router.get(
 )
 
 //PUBLIC ROUTES
+files_router.post("/upload/markdown", authorize, async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => {
+	try {
+		const new_file = await Files.create({...req.body, UserUserId: req.user.user_id, description: req.body.material})
+		if (new_file) {
+			res.status(201).send({status: 201, content: "Succesfully created.", file_id: new_file.file_id})
+		}
+	} catch (e) {
+		res.send(e)
+		next(e)
+	}
+})
+
 files_router.post( 
 	"/upload/image",
 	authorize,
@@ -86,6 +97,8 @@ files_router.post(
 		}
 	}
 )
+
+
 
 files_router.post(
 	"/upload/pdf",
@@ -175,14 +188,15 @@ files_router.put(
 		next: NextFunction
 	): Promise<void> => {
 		try {
+			console.log(req.body, req.user)
 			const file = await Files.findAll({
 				where: {
 					file_id: req.params.file_id,
-					UserUserId: req.cookies.user.user_id,
+					UserUserId: req.user.user_id,
 				},
 			})
 			if (file.length > 0) {
-				const edited_file = await Files.update(req.body, {
+				const edited_file = await Files.update({...req.body, description: req?.body?.material}, {
 					where: {
 						file_id: req.params.file_id,
 					},

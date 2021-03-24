@@ -15,10 +15,14 @@ app.use(require("helmet")())
 const userRouter =  require("./services/users")
 const loginRouter = require("./services/login")
 const filesRouter = require("./services/files")
+const eventsRouter = require("./services/events")
+const classRouter = require("./services/classes")
 
 app.use("/user", userRouter)
 app.use("/login", loginRouter)
 app.use("/files", filesRouter)
+app.use("/event", eventsRouter)
+app.use("/class", classRouter)
 
 app.use(cookieParser())
 

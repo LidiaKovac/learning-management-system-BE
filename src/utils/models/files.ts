@@ -1,14 +1,10 @@
 
 import {
-	DataType,
-	UUID,
 	STRING,
-	DATE,
 	ENUM,
 	INTEGER,
 	Model,
 	Sequelize,
-	Association,
 } from "sequelize"
 
 class Material extends Model {
@@ -35,7 +31,7 @@ class Material extends Model {
           allowNull: false
         },
 				type: {
-          type: ENUM("pdf", "docx", "audio", "video", "image"), 
+          type: ENUM("pdf", "markdown", "audio", "video", "image"), 
           allowNull: false
         },
 				description: {

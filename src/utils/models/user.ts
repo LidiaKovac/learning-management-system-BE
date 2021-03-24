@@ -5,10 +5,11 @@ import {
 	INTEGER,
 	Model,
 	Sequelize,
-	Association,
+	BelongsToManyAddAssociationsMixin,
 } from "sequelize"
 
-import  Material  from "./files"
+import Students_Class from "./student_class"
+import Class from "./class"
 
 class User extends Model {
 	user_id!: number
@@ -22,6 +23,8 @@ class User extends Model {
 
 	createdAt!: Date
 	updatedAd!: Date
+
+	public addClass!: BelongsToManyAddAssociationsMixin<Class["class_id"], {through: Students_Class}>
 
 
 	static initialize(sequelize: Sequelize) {
@@ -78,4 +81,5 @@ class User extends Model {
 	}
 	
 }
+
 export default User

@@ -60,6 +60,19 @@ files_router.get(
 )
 
 //PUBLIC ROUTES
+files_router.get("/me", authorize, async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => {
+	try {
+		const files = await Files.findAll({where: {
+			UserUserId: req.user.user_id,
+		}, attributes: ["description", "name", "type"]})
+		if (files.length>0) {
+			res.status(200).send({status: 200, content: files})
+		} else res.send(204)
+	} catch (e) {
+		next(e)
+	}
+})
+
 files_router.post("/upload/markdown", authorize, async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => {
 	try {
 		const new_file = await Files.create({...req.body, UserUserId: req.user.user_id, description: req.body.material})

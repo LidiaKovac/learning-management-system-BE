@@ -27,7 +27,7 @@ event_router.get(
 event_router.post("/", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
     try {
         const new_event = await EventM.create({...req.body, UserUserId: req.user.user_id})
-        res.status(201).send({message: "Created"})
+        res.status(201).send({message: new_event})
     } catch (e) {
         next(e)
     }

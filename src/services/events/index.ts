@@ -46,9 +46,34 @@ event_router.get("/me", authorize, async(req: RequestWithUser, res: Response, ne
     }
 } )
 
-event_router.get("/:event_id", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+event_router.get("/me", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+    try {
+        const events = await EventM.findAll({where: {
+            UserUserId: req.user.user_id
+        }})
+        if (events.length>0) {
+            res.status(200).send(events)
+        } else res.status(204)
+    } catch (e) {
+        next(e)
+    }
+} )
+
+event_router.get("/search/id/:event_id", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
     try {
         const event = await EventM.findByPk(req.params.event_id)
+        if (event) {
+            res.status(200).send(event)
+        } else res.status(204)
+    } catch (e) {
+        next(e)
+    }
+} )
+event_router.get("/search/date/:date", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+    try {
+        const event = await EventM.findAll({where: {
+            startDate: req.params.date 
+        }})
         if (event) {
             res.status(200).send(event)
         } else res.status(204)

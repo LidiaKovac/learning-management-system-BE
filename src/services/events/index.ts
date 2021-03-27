@@ -7,6 +7,8 @@ import EventM from "../../utils/models/event"
 import { Request, Response, NextFunction } from "express"
 import { admin, authorize, teacher } from "../../middlewares/auth"
 import { RequestWithUser } from "../../utils/interfaces"
+import Class from "../../utils/models/class"
+import Students_Class from "../../utils/models/student_class"
 
 event_router.get(
 	"/admin/all",
@@ -33,7 +35,8 @@ event_router.post("/", authorize, teacher, async(req: RequestWithUser, res: Resp
     }
 } )
 
-event_router.get("/me", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+event_router.get("/created/me", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+    //GET EVENTS CREATED BY LOGGED USER
     try {
         const events = await EventM.findAll({where: {
             UserUserId: req.user.user_id
@@ -47,13 +50,21 @@ event_router.get("/me", authorize, async(req: RequestWithUser, res: Response, ne
 } )
 
 event_router.get("/me", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+    //GETS EVENTS WHOSE STUDENT IS INVITED TO 
     try {
-        const events = await EventM.findAll({where: {
+        const classes = await Students_Class.findAll({where: {
             UserUserId: req.user.user_id
         }})
+        let events:Array<EventM> = []
+        for (let i:number = 0; i < classes.length; i++ ) {
+            let s_event = await EventM.findAll({where: {
+                ClassClassId: classes[i].ClassClassId
+            }} )
+            events = [...events, ...s_event]
+        }
         if (events.length>0) {
-            res.status(200).send(events)
-        } else res.status(204)
+            res.status(200).send({status: 200, content: events})
+        } else res.json(204).send({status: 204, message: "Nothing was found"})
     } catch (e) {
         next(e)
     }

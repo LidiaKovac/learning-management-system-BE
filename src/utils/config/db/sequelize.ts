@@ -35,5 +35,4 @@ Class.hasMany(EventM)
 Class.belongsToMany(User, {through: "Students_Classes"})
 User.belongsToMany(Class, {through: "Students_Classes"})
 
-
 module.exports = sequelize

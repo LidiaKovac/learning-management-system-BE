@@ -1,13 +1,14 @@
 
 //GENERAL
 const event_router = require("express").Router()
-
+import moment from "moment"
 import EventM from "../../utils/models/event"
+
+import {Op} from "sequelize"
 
 import { Request, Response, NextFunction } from "express"
 import { admin, authorize, teacher } from "../../middlewares/auth"
 import { RequestWithUser } from "../../utils/interfaces"
-import Class from "../../utils/models/class"
 import Students_Class from "../../utils/models/student_class"
 
 event_router.get(
@@ -28,7 +29,10 @@ event_router.get(
 
 event_router.post("/", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
     try {
-        const new_event = await EventM.create({...req.body, UserUserId: req.user.user_id})
+        const new_event = await EventM.create({...req.body, 
+            UserUserId: req.user.user_id, 
+            startDate: new Date(req.body.startDate),
+            endDate: new Date(req.body.endDate)})
         res.status(201).send({message: new_event})
     } catch (e) {
         next(e)
@@ -69,6 +73,27 @@ event_router.get("/me", authorize, async(req: RequestWithUser, res: Response, ne
         next(e)
     }
 } )
+event_router.get("/homework/me", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+    try {
+        const classes = await Students_Class.findAll({where: {
+            UserUserId: req.user.user_id
+        }})
+        let events:Array<EventM> = []
+        for (let i:number = 0; i < classes.length; i++ ) {
+            let s_event = await EventM.findAll({where: {
+                ClassClassId: classes[i].ClassClassId,
+                type: "homework"
+            }} )
+            events = [...events, ...s_event]
+        }
+        if (events.length>0) {
+            res.status(200).send({status: 200, content: events})
+        } else res.json(204).send({status: 204, message: "Nothing was found"})
+    } catch (e) {
+        next(e)
+    }
+} )
+
 
 event_router.get("/search/id/:event_id", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
     try {
@@ -80,10 +105,16 @@ event_router.get("/search/id/:event_id", authorize, async(req: RequestWithUser, 
         next(e)
     }
 } )
+
 event_router.get("/search/date/:date", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
     try {
+        const date = moment(req.params.date).format("YYYY-MM-DD")
+        
+        console.log(date)
         const event = await EventM.findAll({where: {
-            startDate: req.params.date 
+            startDate: {
+                [Op.like]: `${date}%`
+              }
         }})
         if (event) {
             res.status(200).send(event)

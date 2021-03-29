@@ -1,8 +1,8 @@
 import {
 	STRING,
-	DATE,
 	ENUM,
 	INTEGER,
+	BOOLEAN,
 	Model,
 	Sequelize,
 } from "sequelize"
@@ -12,8 +12,9 @@ class Event extends Model {
 	name!: string
 	type!: string
     description!: string
-	startDate!: Date
-    endDate!: Date
+	startDate!: String
+    endDate!: String
+	graded!: boolean
 
 	createdAt!: Date
 	updatedAd!: Date
@@ -36,16 +37,21 @@ class Event extends Model {
                     type: ENUM("homework", "exam"), 
                     allowNull: false
                 },
+				graded: {
+					type: BOOLEAN,
+					allowNull: false,
+					defaultValue: false
+				},
 				description: {
                     type: STRING(3000), 
                     allowNull: true
                 },
                 startDate: {
-                    type: DATE,
+                    type: STRING,
                     allowNull: false
                 },
                 endDate: {
-                    type: DATE,
+                    type: STRING,
                     allowNull: false
                 },
 			},

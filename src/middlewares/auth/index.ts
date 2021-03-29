@@ -1,11 +1,8 @@
-//add admin auth
-//add student and teacher auth
-const ApiError = require("../../utils/interfaces")
 import User from "../../utils/models/user"
 
-import { Request, Response, NextFunction } from "express"
+import { Response, NextFunction } from "express"
 import { IncomingHttpHeaders } from "http"
-import { DecodedToken, RequestWithUser, CustomError } from "../../utils/interfaces"
+import { RequestWithUser } from "../../utils/interfaces"
 import { verifyJWT, generateJWT } from "../../utils/tools/auth"
 
 //how to use: 

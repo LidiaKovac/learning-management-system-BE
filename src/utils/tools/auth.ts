@@ -1,5 +1,4 @@
-import { noExtendLeft } from "sequelize/types/lib/operators";
-import { CustomError, DecodedToken } from "../interfaces";
+import { DecodedToken } from "../interfaces";
 
 const jwt = require("jsonwebtoken")
 

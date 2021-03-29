@@ -4,9 +4,6 @@ import {
 	Sequelize,
     INTEGER
 } from "sequelize"
-import { ForeignKey } from "sequelize-typescript"
-import Class from "./class"
-import User from "./user"
 
 class Students_Class extends Model {
     id!: number

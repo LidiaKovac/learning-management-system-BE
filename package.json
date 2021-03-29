@@ -10,7 +10,7 @@
     "start": "node ./src/",
     "_dev": "nodemon -r dotenv/config ./src/",
     "__dev": "ts-node-dev src",
-    "compile": "tsc && node ./build",
+    "compile": "tsc && node ./build  || exit 1",
     "dev": "nodemon -e ts  --exec \"npm run compile\" || exit 1"
   },
   "jest": {

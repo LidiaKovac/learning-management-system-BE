@@ -33,14 +33,6 @@ Basically, if your class looks like this:
   }
 }
 ```
-or, like I did: 
-```js 
-        class Car {
-             name!: string
-             year!: number
-
-        }
-```
 ...you can then call you class and create a new object like this: 
 ```js 
 let my_car = new Car("Panda", "2014") 

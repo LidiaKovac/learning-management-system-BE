@@ -2,7 +2,7 @@
   "name": "learning-management-system-BE",
   "version": "1.0.0",
   "description": "---",
-  "main": "build/server.js",
+  "main": "build/",
   "scripts": {
     "build": "tsc",
     "watch": "jest --watch ./build ",

@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser")
 const app = express()
 //do not declare db
 
-app.use(cors({credentials: true}))
+app.use(cors({credentials: true, origin: process.env.FE_URI || process.env.FE_URI_BACKUP}))
 app.use(express.json())
 app.use(require("helmet")())
 

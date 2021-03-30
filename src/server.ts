@@ -1,4 +1,4 @@
-import { NextFunction, Router } from "express";
+import { Router } from "express";
 const express = require('express')
 const cors = require('cors')
 const cookieParser = require("cookie-parser")
@@ -23,10 +23,6 @@ app.use("/files", filesRouter)
 app.use("/event", eventsRouter)
 app.use("/class", classRouter)
 app.use("/homework", hwRouter)
-app.use(function(req:Request, res:Response, next:NextFunction) {
-    req.headers.append("Access-Control-Allow-Origin", "*")
-    next();
-  });
 
 app.use(cookieParser())
 

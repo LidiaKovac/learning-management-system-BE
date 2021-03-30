@@ -24,7 +24,7 @@ app.use("/event", eventsRouter)
 app.use("/class", classRouter)
 app.use("/homework", hwRouter)
 app.use(function(req:Request, res:Response, next:NextFunction) {
-    res.headers.append("Access-Control-Allow-Origin", "*")
+    req.headers.append("Access-Control-Allow-Origin", "*")
     next();
   });
 

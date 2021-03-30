@@ -42,7 +42,7 @@ export const authorize = async (
 				if (!user) {
 					throw new Error("User not found")
 				}
-				res.cookie("token", token, {secure: true}) //add secure: true when deploying
+				res.cookie("token", token) //add secure: true when deploying
 				req.user = {user_id: user[0].user_id, birthday: user[0].birthday, status: "succ"}
 				next()
 			} else res.status(401).send({message:decoded.status})

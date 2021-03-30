@@ -48,12 +48,9 @@ login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promi
                     httpOnly: true,
                     secure: true, //set to true when deploy, false localhost
                     sameSite: "none", // activate this only when deploying
+                    domain: ".herokuapp.com"
                   })
-                   res.cookie("user", found_user[0].email, {
-                    httpOnly: true,
-                    secure: true, //set to true when deploy, false localhost
-                    sameSite: "none", // activate this only when deploying
-                  })
+                  
                    res.send({message: "Logged in"})
                }
                else {

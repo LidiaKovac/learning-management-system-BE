@@ -7,7 +7,7 @@
     "build": "tsc",
     "watch": "jest --watch ./build ",
     "test": "jest --detectOpenHandles",
-    "start": "node ./build",
+    "start": "node ./build/server.js",
     "_dev": "nodemon -r dotenv/config ./src/",
     "__dev": "ts-node-dev src",
     "compile": "tsc && node ./build  || exit 1",

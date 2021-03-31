@@ -26,6 +26,7 @@ export const authorize = async (
 	next: NextFunction
 ) => {
     try {
+		console.log(req.cookies)
             if (!req.cookies?.token) {
                 //if no auth is provided
                 res.status(401).send("Please provide a token")

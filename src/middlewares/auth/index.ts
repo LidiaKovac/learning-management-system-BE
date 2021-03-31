@@ -26,11 +26,10 @@ export const authorize = async (
 	next: NextFunction
 ) => {
     try {
-            if (!req.cookies.token) {
+            if (!req.cookies?.token) {
                 //if no auth is provided
                 res.status(401).send("Please provide a token")
             } else {
-			
 			const decoded = await verifyJWT(req.cookies.token)
 			if (decoded.user_id) {
 				const user = await User.findByPk(decoded.user_id)

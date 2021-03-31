@@ -64,7 +64,7 @@ files_router.get("/me", authorize, async(req:RequestWithUser, res:Response, next
 	try {
 		const files = await Files.findAll({where: {
 			UserUserId: req.user.user_id,
-		}, attributes: ["description", "name", "type"]})
+		}, attributes: ["description", "name", "type", "file_id"]})
 		if (files.length>0) {
 			res.status(200).send({status: 200, content: files})
 		} else res.send(204)
@@ -201,7 +201,6 @@ files_router.put(
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			console.log(req.body, req.user)
 			const file = await Files.findAll({
 				where: {
 					file_id: req.params.file_id,

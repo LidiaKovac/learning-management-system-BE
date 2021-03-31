@@ -45,7 +45,6 @@ login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promi
                if (is_correct) {
                    const token = await authenticate(found_user[0].user_id, found_user[0].birthday)
                    res.cookie("token", token)
-                   res.cookie("user", found_user[0].email, {httpOnly: false})
                    res.send({message: "Logged in"})
                }
                else {

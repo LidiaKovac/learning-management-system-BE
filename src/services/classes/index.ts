@@ -1,7 +1,7 @@
 
 //GENERAL
 const class_router = require("express").Router()
-
+import {Op} from "sequelize"
 import { Request, Response, NextFunction } from "express"
 import { admin, authorize, teacher, student } from "../../middlewares/auth"
 import { RequestWithUser } from "../../utils/interfaces"
@@ -36,7 +36,10 @@ class_router.post("/", authorize, teacher, async(req: RequestWithUser, res: Resp
 class_router.post("/search", authorize, async(req: Request, res:Response, next:NextFunction):Promise<void> => {
     try {
         const classes = await Class.findAll({where: {
-            name: req.body.query
+            name: {
+                [Op.iLike]: `%${req.body.query}%`
+                
+              }
         }})
         if (classes.length > 0) res.status(200).send(classes)
         else res.send({message: "Nothing here"})

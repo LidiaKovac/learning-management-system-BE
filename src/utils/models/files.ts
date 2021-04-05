@@ -1,52 +1,49 @@
-
-import {
-	STRING,
-	ENUM,
-	INTEGER,
-	Model,
-	Sequelize,
-} from "sequelize"
+import { STRING, ENUM, INTEGER, Model, Sequelize } from "sequelize";
 
 class Material extends Model {
-	file_id!: number
-	name!: string
-	type!: string
-	description!: string
+  file_id!: number;
+  name!: string;
+  type!: string;
+  description!: string;
+  class_ref!: number;
 
-	createdAt!: Date
-	updatedAd!: Date
+  createdAt!: Date;
+  updatedAd!: Date;
 
-	static initialize(sequelize: Sequelize) {
-		this.init(
-			{
-				file_id: {
-					allowNull: false,
-					autoIncrement: true,
-					primaryKey: true,
-					type: INTEGER,
-					unique: true,
-				},
-				name: {
-          type: STRING(50), 
-          allowNull: false
+  static initialize(sequelize: Sequelize) {
+    this.init(
+      {
+        file_id: {
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
+          type: INTEGER,
+          unique: true,
         },
-				type: {
-          type: ENUM("pdf", "markdown", "audio", "video", "image"), 
-          allowNull: false
+        name: {
+          type: STRING(50),
+          allowNull: false,
         },
-				description: {
-          type: STRING(3000), 
-          allowNull: true
+        type: {
+          type: ENUM("pdf", "markdown", "audio", "video", "image"),
+          allowNull: false,
         },
-			},
-			{
-				sequelize,
-				timestamps: true,
-				modelName: "Files",
-			}
-		)
-	}
+        description: {
+          type: STRING(3000),
+          allowNull: true,
+        },
+		class_ref: {
+			type: INTEGER,
+			allowNull: true
+		}
+      },
+      {
+        sequelize,
+        timestamps: true,
+        modelName: "Files",
+      }
+    );
+  }
 }
 
-
-export default Material
+export default Material;

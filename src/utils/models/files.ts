@@ -5,7 +5,7 @@ class Material extends Model {
   name!: string;
   type!: string;
   description!: string;
-  class_ref!: number;
+  section_ref!: number;
 
   createdAt!: Date;
   updatedAd!: Date;
@@ -32,10 +32,10 @@ class Material extends Model {
           type: STRING(3000),
           allowNull: true,
         },
-		class_ref: {
-			type: INTEGER,
-			allowNull: true
-		}
+        section_ref: {
+          type: INTEGER,
+          allowNull: true,
+        },
       },
       {
         sequelize,

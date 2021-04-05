@@ -5,11 +5,13 @@ import {
 	Model,
 	Sequelize,
 } from "sequelize"
+import Material from "./files"
 
 class Section extends Model {
 	section_id!: number
 	name!: string
     description!: string
+	files?: Array<Material>
     //add optional course ref to files
 
 	createdAt!: Date

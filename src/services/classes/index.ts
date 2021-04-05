@@ -140,11 +140,15 @@ class_router.post(
             ]
         }
         */
-       console.log(req.body)
-      const section = await Section.create({...req.body.section, ClassClassId: req.params.class_id});
-      if (req.body.files) await Material.create(req.body.files);
-     console.log(section)
-      res.status(201).send({message: "Created"})
+      //console.log(req.body);
+      const section = await Section.create({
+        ...req.body.section,
+        ClassClassId: req.params.class_id,
+      });
+      console.log(section)
+      // if (req.body.files) await Material.create({...req.body.files, section_ref: section.getDataValue("section_id")});
+      // //console.log(section);
+      res.status(201).send({ message: "Created", id: section.section_id });
     } catch (e) {
       next(e);
     }
@@ -195,8 +199,25 @@ class_router.get(
     try {
       const class_found = await Class.findByPk(req.params.class_id);
       if (class_found) {
-        const sections = await Section.findAll({where: {ClassClassId: class_found.class_id}})
-        res.status(200).send({class: class_found, sections: sections});
+        const sections = await Section.findAll({
+          where: { ClassClassId: class_found.class_id },
+        });
+        //console.log(sec_w_f)
+        let section_files = await Material.findAll({
+          where: {
+            section_ref: {
+              [Op.or]: [sections.map((s) => s.section_id)],
+            },
+          },
+        });
+        //console.log(sections)
+        res
+          .status(200)
+          .send({
+            class: class_found,
+            sections: sections,
+            files: section_files,
+          });
       } else res.status(204);
     } catch (e) {
       next(e);

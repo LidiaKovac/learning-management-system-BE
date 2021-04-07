@@ -18,6 +18,8 @@ app.use(cors({
     exposedHeaders: ["set-cookie"],
   })
 );
+
+app.use((req:Request, res:Response, next:NextFunction)=> res.headers.append("Access-Control-Allow-Credentials", "true"))
 app.use(express.json())
 app.use(require("helmet")())
 

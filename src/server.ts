@@ -11,8 +11,8 @@ const app = express()
 app.use(cors({
     origin: [
       process.env.FE_URI,
-      "http://localhost:3002/",
-      "http://localhost:3000/",
+      //"http://localhost:3002/",
+      //"http://localhost:3000/",
     ],
     credentials: true,
     exposedHeaders: ["set-cookie"],

@@ -16,6 +16,7 @@ const filesRouter = require("./services/files")
 const eventsRouter = require("./services/events")
 const classRouter = require("./services/classes")
 const hwRouter = require("./services/homework")
+const todoRouter = require("./services/todo")
 
 app.use("/user", userRouter)
 app.use("/login", loginRouter)
@@ -23,6 +24,7 @@ app.use("/files", filesRouter)
 app.use("/event", eventsRouter)
 app.use("/class", classRouter)
 app.use("/homework", hwRouter)
+app.use("/todo", todoRouter)
 
 app.use(cookieParser())
 

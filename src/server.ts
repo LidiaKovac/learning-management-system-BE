@@ -16,10 +16,12 @@ app.use(cors({
     ],
     credentials: true,
     exposedHeaders: ["set-cookie"],
+    
   })
 );
 app.use(express.json())
 app.use(require("helmet")())
+app.options('*', cors())
 
 const userRouter =  require("./services/users")
 const loginRouter = require("./services/login")

@@ -26,12 +26,12 @@ export const authorize = async (
 	next: NextFunction
 ) => {
     try {
-		console.log(req.headers["authorization"]!.toString().split("=")[1])
+		console.log(req.headers["authorization"]!.replace("Bearer ", ""))
             if (!req.headers["authorization"]) {
                 //if no auth is provided
                 res.status(401).send("Please provide a token")
             } else {
-			const decoded = await verifyJWT(req.headers["authorization"]!.toString().split("=")[1])
+			const decoded = await verifyJWT(req.headers["authorization"]!.replace("Bearer ", ""))
 			if (decoded.user_id) {
 				const user = await User.findByPk(decoded.user_id)
 	

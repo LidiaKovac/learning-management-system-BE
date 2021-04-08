@@ -2,7 +2,6 @@ import { NextFunction, Router } from "express";
 import { Request } from "express-serve-static-core";
 const express = require('express')
 const cors = require('cors')
-const bodyParser = require("body-parser")
 const cookieParser = require("cookie-parser")
 
 const app = express()
@@ -50,7 +49,7 @@ app.use("/class", classRouter)
 app.use("/homework", hwRouter)
 
 
-app.use(bodyParser())
+
 app.use(cookieParser())
 
 module.exports = app

@@ -31,7 +31,7 @@ export const authorize = async (
                 //if no auth is provided
                 res.status(401).send("Please provide a token")
             } else {
-			const decoded = await verifyJWT(req.headers["authorization"])
+			const decoded = await verifyJWT(req.headers["authorization"].split("=")[1])
 			if (decoded.user_id) {
 				const user = await User.findByPk(decoded.user_id)
 	

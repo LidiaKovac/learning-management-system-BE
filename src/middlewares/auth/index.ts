@@ -26,7 +26,7 @@ export const authorize = async (
 	next: NextFunction
 ) => {
     try {
-		console.log(req, req.headers["authorization"]!.toString().split("=")[1])
+		console.log(req.headers["authorization"]!.toString().split("=")[1])
             if (!req.headers["authorization"]) {
                 //if no auth is provided
                 res.status(401).send("Please provide a token")

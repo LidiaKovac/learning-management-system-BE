@@ -44,7 +44,12 @@ login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promi
                const is_correct = await bcrypt.compare(req.body.password, found_user[0].password)
                if (is_correct) {
                    const token = await authenticate(found_user[0].user_id, found_user[0].birthday)
-                   res.cookie("token", token)
+                   res.cookie("token", token, {
+                    httpOnly: false,
+                    secure: true, //set to true when deploy, false localhost
+                    sameSite: "none", // activate this only when deploying
+                    //domain: process.env.FE_URI
+                  })
                    res.send({message: "Logged in"})
                }
                else {

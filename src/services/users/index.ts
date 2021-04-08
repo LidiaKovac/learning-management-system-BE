@@ -73,19 +73,6 @@ user_router.delete("/admin/:id", authorize,admin, async(req:Request, res:Respons
 //PUBLIC ROUTES
 //creation of users moved to login 
 
-user_router.get("/:user_id", authorize, async(req:Request, res:Response, next:NextFunction):Promise<void> => {
-    try {
-        const userdata = await User.findByPk(req.params.user_id)
-        if (userdata) {
-            res.status(200).send(userdata)
-        } else {
-            res.send(204)
-        }
-    } catch (e) {
-        next(e)
-    }
-})
-
 user_router.put("/me", authorize, async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => {
     try {
         if (req.user) {

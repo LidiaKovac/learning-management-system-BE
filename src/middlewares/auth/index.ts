@@ -13,7 +13,7 @@ import { verifyJWT, generateJWT } from "../../utils/tools/auth"
 export const authenticate = async(user_id:number, birthday:Date) => {
     try {
 		if( user_id && birthday)
-        {const new_token:string = await generateJWT({user_id, birthday})
+        {const new_token:String = await generateJWT({user_id, birthday})
         return new_token } else return new Error("Please login again")
     } catch (e) {
         console.log(e)
@@ -38,7 +38,6 @@ export const authorize = async (
 				if (!user) {
 					throw new Error("User not found")
 				}
-				res.header("set-cookie", req.cookies.token as string)
 				res.cookie("token", req.cookies.token, {
 					httpOnly: false,
 					secure: true, //set to true when deploy, false localhost

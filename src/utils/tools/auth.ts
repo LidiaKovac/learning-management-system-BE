@@ -10,12 +10,12 @@ export const verifyJWT = (token:any):Promise<DecodedToken> => new Promise((res, 
         res(decoded);
 }));
 
-export const generateJWT = (payload:Object):Promise<String> => new Promise((res, rej) =>
+export const generateJWT = (payload:Object):Promise<string> => new Promise((res, rej) =>
 jwt.sign(
   payload,
   JWT_SECRET,
   { expiresIn: '30 min' }, //value is a string (expressing the time ) or a number (in seconds)
-  (err:Error, token:String) => {
+  (err:Error, token:string) => {
     if (err) rej(err); //reject
     res(token); //sets response
   }

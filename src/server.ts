@@ -1,5 +1,4 @@
-import { NextFunction, Router } from "express";
-import { Request } from "express-serve-static-core";
+import { Router } from "express";
 const express = require('express')
 const cors = require('cors')
 const cookieParser = require("cookie-parser")
@@ -19,6 +18,9 @@ app.use(cors({
     
   })
 );
+
+
+
 app.use(express.json())
 app.use(require("helmet")())
 app.options('*', cors())
@@ -29,6 +31,7 @@ const filesRouter = require("./services/files")
 const eventsRouter = require("./services/events")
 const classRouter = require("./services/classes")
 const hwRouter = require("./services/homework")
+const todoRouter = require("./services/todo")
 
 app.use("/user", userRouter)
 app.use("/login", loginRouter)
@@ -36,8 +39,7 @@ app.use("/files", filesRouter)
 app.use("/event", eventsRouter)
 app.use("/class", classRouter)
 app.use("/homework", hwRouter)
-
-
+app.use("/todo", todoRouter)
 
 app.use(cookieParser())
 

@@ -34,7 +34,7 @@ login_router.post("/new", cloudinaryMulter_img.single("profile_picture"), async(
 
 login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promise<void> => { 
     try {
-       if (!req.body.email || !req.body.password || (!req.body.email && !req.body.password)) {
+       if (!req.body.email || !req.body.password) {
         res.status(400).send({message: "Email or password not provided"})
        } else {
            const found_user = await User.findAll({where: {

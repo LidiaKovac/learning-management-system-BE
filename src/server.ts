@@ -6,9 +6,24 @@ const cookieParser = require("cookie-parser")
 const app = express()
 //do not declare db
 
-app.use(cors({credentials: true, origin: process.env.FE_URI || process.env.FE_URI_BACKUP}))
+
+app.use(cors({
+    origin: [
+      process.env.FE_URI,
+      //"http://localhost:3002/",
+      //"http://localhost:3000/",
+    ],
+    credentials: true,
+    exposedHeaders: ["set-cookie"],
+    
+  })
+);
+
+
+
 app.use(express.json())
 app.use(require("helmet")())
+app.options('*', cors())
 
 const userRouter =  require("./services/users")
 const loginRouter = require("./services/login")

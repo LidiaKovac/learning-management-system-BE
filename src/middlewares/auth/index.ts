@@ -26,22 +26,22 @@ export const authorize = async (
 	next: NextFunction
 ) => {
     try {
-		console.log(req.cookies)
-            if (!req.cookies?.token) {
+		console.log(req.header("Authorization"))
+            if (!req.header("Authorization")) {
                 //if no auth is provided
                 res.status(401).send("Please provide a token")
             } else {
-			const decoded = await verifyJWT(req.cookies.token)
+			const decoded = await verifyJWT(req.header("Authorization"))
 			if (decoded.user_id) {
 				const user = await User.findByPk(decoded.user_id)
 	
 				if (!user) {
 					throw new Error("User not found")
 				}
-				res.cookie("token", req.cookies.token, {
-					httpOnly: false,
-					secure: true, //set to true when deploy, false localhost
-					sameSite: "none",}) //add secure: true when deploying
+				// res.cookie("token", req.cookies.token, {
+				// 	httpOnly: false,
+				// 	secure: true, //set to true when deploy, false localhost
+				// 	sameSite: "none",}) //add secure: true when deploying
 				req.user = {user_id: user.user_id, birthday: user.birthday, status: "succ"}
 				next()
 			} else res.status(401).send({message:decoded.status})

@@ -44,8 +44,7 @@ login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promi
                const is_correct = await bcrypt.compare(req.body.password, found_user[0].password)
                if (is_correct) {
                    const token = await authenticate(found_user[0].user_id, found_user[0].birthday)
-                   res.cookie("token", token)
-                   res.send({message: "Logged in"})
+                   res.send({message: "Logged in", token: token})
                }
                else {
                    res.status(400).send({message: "Wrong email or password"})

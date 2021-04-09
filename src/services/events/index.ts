@@ -107,7 +107,6 @@ event_router.get("/search/id/:event_id", authorize, async(req: RequestWithUser, 
 event_router.get("/search/date/:date", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
     try {
         const date = moment(req.params.date).format("YYYY-MM-DD")
-        
         console.log(date)
         const event = await EventM.findAll({where: {
             startDate: {

@@ -32,10 +32,9 @@ login_router.post("/new", cloudinaryMulter_img.single("profile_picture"), async(
     }
 })
 
-login_router.post("/", async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => { 
+login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promise<void> => { 
     try {
-        console.log(req.body)
-       if (!req.body.email || !req.body.password) {
+       if (!req.body.email || !req.body.password || (!req.body.email && !req.body.password)) {
         res.status(400).send({message: "Email or password not provided"})
        } else {
            const found_user = await User.findAll({where: {
@@ -45,8 +44,8 @@ login_router.post("/", async(req:RequestWithUser, res:Response, next:NextFunctio
                const is_correct = await bcrypt.compare(req.body.password, found_user[0].password)
                if (is_correct) {
                    const token = await authenticate(found_user[0].user_id, found_user[0].birthday)
-                  
-                   res.send({message: "Logged in", "token": token})
+                   res.cookie("token", token)
+                   res.send({message: "Logged in"})
                }
                else {
                    res.status(400).send({message: "Wrong email or password"})
@@ -67,7 +66,16 @@ login_router.get("/me", authorize, async(req:RequestWithUser, res:Response, next
         if (req?.user?.user_id) {
 
             const logged_user = await User.findByPk(req.user.user_id!) //user_id can be null not so ! must be there
-            if (logged_user) res.status(200).send({message: logged_user})
+
+            if (logged_user) {
+                res.status(200).send({message: {
+                    name: logged_user.name, 
+                    last_name: logged_user.last_name, 
+                    email: logged_user.email, 
+                    pronouns: logged_user.pronouns, 
+                    role: logged_user.role
+                }})
+            }
             else res.status(404).send({message: "User not found."})
         } else res.status(401).send({message: "Please login first."})
     } catch (e) {

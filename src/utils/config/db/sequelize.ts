@@ -4,6 +4,7 @@ import  User  from "../../models/user"
 import EventM from "../../models/event"
 import Class from "../../models/class"
 import Students_Class from "../../models/student_class"
+import Homework from "../../models/homework"
 const Sequelize = require("sequelize")
 const {SQL_URI} = process.env
 
@@ -18,7 +19,7 @@ const sequelize = new Sequelize(SQL_URI, {
 	},
 })
 
-let models = [Material, User, EventM, Class, Students_Class]
+let models = [Material, User, EventM, Class, Students_Class, Homework]
 models.forEach((model) => {
 	model.initialize(sequelize)
 })
@@ -34,5 +35,9 @@ Class.hasMany(EventM)
 
 Class.belongsToMany(User, {through: "Students_Classes"})
 User.belongsToMany(Class, {through: "Students_Classes"})
+
+Homework.belongsTo(EventM)
+EventM.hasMany(Homework)
+
 
 module.exports = sequelize

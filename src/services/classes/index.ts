@@ -25,15 +25,25 @@ class_router.get(
 	}
 )
 
-class_router.post("/", authorize, teacher, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
+class_router.post("/", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
     try {
-        await Class.create(req.body)
+        await Class.create({...req.body, author: req.user.user_id})
         res.status(201).send({message: "Created"})
     } catch (e) {
         next(e)
     }
 } )
-
+class_router.post("/search", authorize, async(req: Request, res:Response, next:NextFunction):Promise<void> => {
+    try {
+        const classes = await Class.findAll({where: {
+            name: req.body.query
+        }})
+        if (classes.length > 0) res.status(200).send(classes)
+        else res.send({message: "Nothing here"})
+    } catch (e) {
+        next(e)
+    }
+})
 class_router.post("/enroll/:class_id", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
     try {
         const class_to_enroll = await Class.findOne({where: {
@@ -54,14 +64,33 @@ class_router.post("/enroll/:class_id", authorize, async(req: RequestWithUser, re
     }
 } )
 
-class_router.get("/me", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+class_router.get("/me", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
     try {
         const events = await Class.findAll({where: {
-            UserUserId: req.user.user_id
+            author: req.user.user_id
         }})
         if (events.length>0) {
             res.status(200).send(events)
-        } else res.status(204)
+        } else res.send({status: 204, message: "Nothing here"})
+    } catch (e) {
+        next(e)
+    }
+} )
+class_router.get("/me/enrolled", authorize, student, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+    try {
+        const classes_stud = await Students_Class.findAll({where: {
+            UserUserId: req.user.user_id
+        }})
+        let classes:Array<Class> = []
+        for (let i:number = 0; i < classes_stud.length; i++ ) {
+            let s_class = await Class.findAll({where: {
+                class_id: classes_stud[i].ClassClassId
+            }} )
+            classes = [...classes, ...s_class]
+        }
+        if (classes.length>0) {
+            res.status(200).send(classes)
+        } else res.send({status: 204, message: "Nothing here"})
     } catch (e) {
         next(e)
     }

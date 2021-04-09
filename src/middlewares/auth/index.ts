@@ -1,11 +1,8 @@
-//add admin auth
-//add student and teacher auth
-const ApiError = require("../../utils/interfaces")
 import User from "../../utils/models/user"
 
-import { Request, Response, NextFunction } from "express"
+import { Response, NextFunction } from "express"
 import { IncomingHttpHeaders } from "http"
-import { DecodedToken, RequestWithUser, CustomError } from "../../utils/interfaces"
+import { RequestWithUser } from "../../utils/interfaces"
 import { verifyJWT, generateJWT } from "../../utils/tools/auth"
 
 //how to use: 
@@ -29,24 +26,23 @@ export const authorize = async (
 	next: NextFunction
 ) => {
     try {
-            if (!req.headers.authorization) {
+		console.log(req.headers["authorization"]!.replace("Bearer ", ""))
+            if (!req.headers["authorization"]) {
                 //if no auth is provided
                 res.status(401).send("Please provide a token")
             } else {
-			const headers: IncomingHttpHeaders = req.headers
-            
-			const token:String = await headers.authorization?.replace("Bearer ", "")!
-			const decoded = await verifyJWT(token)
+			const decoded = await verifyJWT(req.headers["authorization"]!.replace("Bearer ", ""))
 			if (decoded.user_id) {
-				const user = await User.findAll({
-					where: { user_id: decoded.user_id },
-				})
+				const user = await User.findByPk(decoded.user_id)
 	
 				if (!user) {
 					throw new Error("User not found")
 				}
-				res.cookie("token", token) //add secure: true when deploying
-				req.user = {user_id: user[0].user_id, birthday: user[0].birthday, status: "succ"}
+				// res.cookie("token", req.cookies.token, {
+				// 	httpOnly: false,
+				// 	secure: true, //set to true when deploy, false localhost
+				// 	sameSite: "none",}) //add secure: true when deploying
+				req.user = {user_id: user.user_id, birthday: user.birthday, status: "succ"}
 				next()
 			} else res.status(401).send({message:decoded.status})
         }

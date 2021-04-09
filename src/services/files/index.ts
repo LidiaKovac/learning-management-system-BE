@@ -64,7 +64,7 @@ files_router.get("/me", authorize, async(req:RequestWithUser, res:Response, next
 	try {
 		const files = await Files.findAll({where: {
 			UserUserId: req.user.user_id,
-		}, attributes: ["description", "name", "type"]})
+		}, attributes: ["description", "name", "type", "file_id"]})
 		if (files.length>0) {
 			res.status(200).send({status: 200, content: files})
 		} else res.send(204)
@@ -209,19 +209,18 @@ files_router.put(
 				},
 			})
 			if (file.length > 0) {
-				const edited_file = await Files.update({...req.body, description: req?.body?.material}, {
+				console.log(req.params.file_id)
+				const edited_file = await Files.update({...req.body}, {
 					where: {
 						file_id: req.params.file_id,
 					},
 				})
-				if (edited_file[0] === 1) res.status(201).send("Updated")
-				else {
-					res.status(304).send("Not modified")
-				}
+				if (edited_file[0] === 1) res.status(201).send({status: 201, message: "Updated"})
+				else res.status(304).send({message: "Not modified"})
 			} else {
 				res
 					.status(400)
-					.send("This file doesn't exist or you are not allowed to modify it")
+					.send({message: "This file doesn't exist or you are not allowed to modify it"})
 			}
 		} catch (e) {
 			next(e)

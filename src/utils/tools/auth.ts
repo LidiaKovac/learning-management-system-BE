@@ -1,10 +1,9 @@
-import { noExtendLeft } from "sequelize/types/lib/operators";
-import { CustomError, DecodedToken } from "../interfaces";
+import { DecodedToken } from "../interfaces";
 
 const jwt = require("jsonwebtoken")
 
 const {JWT_SECRET} = process.env
-export const verifyJWT = (token:any):Promise<DecodedToken> => new Promise((res, rej) => jwt.verify(token, JWT_SECRET, (err:Error, decoded:DecodedToken) => {
+export const verifyJWT = (token:string):Promise<DecodedToken> => new Promise((res, rej) => jwt.verify(token, JWT_SECRET, (err:Error, decoded:DecodedToken) => {
     if (err)
         res({user_id: null, birthday: null, status: err.message})
     else 

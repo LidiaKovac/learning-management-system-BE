@@ -32,9 +32,10 @@ login_router.post("/new", cloudinaryMulter_img.single("profile_picture"), async(
     }
 })
 
-login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promise<void> => { 
+login_router.post("/", async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => { 
     try {
-       if (!req.body.email || !req.body.password || (!req.body.email && !req.body.password)) {
+        console.log(req.body)
+       if (!req.body.email || !req.body.password) {
         res.status(400).send({message: "Email or password not provided"})
        } else {
            const found_user = await User.findAll({where: {
@@ -44,9 +45,8 @@ login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promi
                const is_correct = await bcrypt.compare(req.body.password, found_user[0].password)
                if (is_correct) {
                    const token = await authenticate(found_user[0].user_id, found_user[0].birthday)
-                   res.cookie("token", token)
-                   res.cookie("user", found_user[0].email, {httpOnly: false})
-                   res.send({message: "Logged in"})
+                  
+                   res.send({message: "Logged in", "token": token})
                }
                else {
                    res.status(400).send({message: "Wrong email or password"})

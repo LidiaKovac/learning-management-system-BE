@@ -1,9 +1,8 @@
 import  User  from "../../utils/models/user"
 import {Request, Response, NextFunction} from "express"
-import { authorize, admin, student, teacher } from "../../middlewares/auth"
+import { authorize, admin } from "../../middlewares/auth"
 import { RequestWithUser } from "../../utils/interfaces"
 const user_router = require("express").Router()
-const ApiError = require("../../utils/interfaces")
 
 //ADMIN ROUTES: 
 user_router.get("/admin", authorize, admin, async(req:Request,res:Response,next:NextFunction):Promise<void>=> {

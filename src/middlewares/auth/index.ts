@@ -26,7 +26,7 @@ export const authorize = async (
 	next: NextFunction
 ) => {
     try {
-		console.log(req.headers["authorization"]!.replace("Bearer ", ""))
+		
             if (!req.headers["authorization"]) {
                 //if no auth is provided
                 res.status(401).send("Please provide a token")
@@ -48,7 +48,7 @@ export const authorize = async (
         }
 		} catch (e) {
 			next(e)
-			console.log(e)
+			
 		}
 	}
 

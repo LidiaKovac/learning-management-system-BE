@@ -76,7 +76,7 @@ files_router.get(
       });
       if (files.length > 0) {
         res.status(200).send({ status: 200, content: files });
-      } else res.send(204);
+      } else res.send({status: 204, content: []});
     } catch (e) {
       next(e);
     }
@@ -250,7 +250,7 @@ files_router.put(
         },
       });
       if (file.length > 0) {
-        console.log(req.params.file_id);
+        
         const edited_file = await Files.update(
           { ...req.body },
           {
@@ -287,7 +287,7 @@ files_router.delete(
       const file = await Files.findAll({
         where: {
           file_id: req.params.file_id,
-          UserUserId: req.cookies.user.user_id,
+          UserUserId: req.user.user_id,
         },
       });
       if (file.length > 0) {

@@ -12,7 +12,7 @@ import { RequestWithUser } from "../../utils/interfaces"
 //PUBLIC ROUTES 
 login_router.post("/new", cloudinaryMulter_img.single("profile_picture"), async(req:Request, res:Response, next:NextFunction):Promise<void>=> {
     try {
-        //console.log(req.files)
+        
         await User.create({...req.body, password: await bcryptjs.hash(req.body.password, 10), birthday: moment(req.body.birthday), profile_picture : req.file ? req.file.path : "https://placehold.it/200x200" })
         res.status(201).send({message: "Created", status: 201})
     } catch (e) {

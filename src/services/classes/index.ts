@@ -77,7 +77,7 @@ class_router.post(
         },
       });
       const user = await User.findByPk(req.user.user_id?.toString());
-      console.log(class_to_enroll, user);
+      
       if (class_to_enroll && user) {
         const enroll = await Students_Class.create({
           ClassClassId: req.params.class_id,
@@ -140,14 +140,14 @@ class_router.post(
             ]
         }
         */
-      //console.log(req.body);
+      
       const section = await Section.create({
         ...req.body.section,
         ClassClassId: req.params.class_id,
       });
-      console.log(section)
+      
       // if (req.body.files) await Material.create({...req.body.files, section_ref: section.getDataValue("section_id")});
-      // //console.log(section);
+     
       res.status(201).send({ message: "Created", id: section.section_id });
     } catch (e) {
       next(e);
@@ -202,7 +202,7 @@ class_router.get(
         const sections = await Section.findAll({
           where: { ClassClassId: class_found.class_id },
         });
-        //console.log(sec_w_f)
+       
         let section_files = await Material.findAll({
           where: {
             section_ref: {
@@ -210,7 +210,7 @@ class_router.get(
             },
           },
         });
-        //console.log(sections)
+ 
         res
           .status(200)
           .send({

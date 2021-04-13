@@ -260,7 +260,7 @@ files_router.put(
           }
         );
         if (edited_file[0] === 1)
-          res.status(201).send({ status: 201, message: "Updated" });
+          res.status(201).send({ status: 201, message: "Updated", file_id: req.params.file_id });
         else res.status(304).send({ message: "Not modified" });
       } else {
         res

@@ -25,7 +25,8 @@ hw_router.get(
 
 hw_router.post("/:event_id", authorize, student, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
     try {
-        const new_homework = await Homework.create({...req.body, 
+        console.log(req.body)
+        const new_homework = await Homework.create({content: req.body.content, 
             author: req.user.user_id, 
             EventEventId: req.params.event_id
         })
@@ -36,7 +37,7 @@ hw_router.post("/:event_id", authorize, student, async(req: RequestWithUser, res
 } )
 
 hw_router.get("/created/me", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
-    //GET EVENTS CREATED BY LOGGED USER
+    //GET HW SUBMITTED BY LOGGED USER
     try {
         const events = await Homework.findAll({where: {
             author: req.user.user_id

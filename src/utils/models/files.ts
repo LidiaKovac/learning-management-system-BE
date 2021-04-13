@@ -29,7 +29,7 @@ class Material extends Model {
           allowNull: false,
         },
         description: {
-          type: STRING(3000),
+          type: STRING(1000000),
           allowNull: true,
         },
         section_ref: {

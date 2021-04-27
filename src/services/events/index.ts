@@ -10,6 +10,7 @@ import { Request, Response, NextFunction } from "express"
 import { admin, authorize, teacher } from "../../middlewares/auth"
 import { RequestWithUser } from "../../utils/interfaces"
 import Students_Class from "../../utils/models/student_class"
+import Homework from "../../utils/models/homework"
 
 event_router.get(
 	"/admin/all",
@@ -87,6 +88,29 @@ event_router.get("/homework/me", authorize, async(req: RequestWithUser, res: Res
         if (events.length>0) {
             res.status(200).send({status: 200, content: events})
         } else res.json(204).send({status: 204, message: "Nothing was found"})
+    } catch (e) {
+        next(e)
+    }
+} )
+
+event_router.get("/homework/teacher", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+    try {
+
+       const events = await EventM.findAll({where: {
+           UserUserId: req.user.user_id
+       }}) 
+       if (events.length > 0) {
+           let hw = events.filter((ev)=> ev.type === "homework" )
+           let entries:Array<Homework> = []
+           for (let i:number = 0; i < hw.length; i++) {
+               let hw_f = await Homework.findAll({where: {
+                   EventEventId: hw[i].event_id
+               }
+               })
+               entries.push(...hw_f)
+           }
+           res.status(200).send({status: 200, content: entries})
+       } else res.send({status: 204, content: []})
     } catch (e) {
         next(e)
     }

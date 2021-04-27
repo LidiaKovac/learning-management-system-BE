@@ -77,7 +77,11 @@ user_router.get("/:user_id", authorize, async(req:Request, res:Response, next:Ne
     try {
         const userdata = await User.findByPk(req.params.user_id)
         if (userdata) {
-            res.status(200).send(userdata)
+            res.status(200).send({
+                name: userdata.name,
+                last_name: userdata.last_name,
+                user_id: userdata.user_id
+            })
         } else {
             res.send(204)
         }

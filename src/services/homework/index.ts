@@ -76,7 +76,7 @@ hw_router.put("/:hw_id", authorize, async(req: RequestWithUser, res: Response, n
 
 hw_router.put("/grade/:hw_id", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
     try {
-        const hw = await Homework.update(req.body, {where: {event_id: req.params.event_id}})
+        const hw = await Homework.update(req.body, {where: {hw_id: req.params.hw_id}})
         if (hw) {
             res.status(304)
         } else res.status(204)
@@ -87,7 +87,7 @@ hw_router.put("/grade/:hw_id", authorize, teacher, async(req: RequestWithUser, r
 
 hw_router.delete("/:hw_id", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
     try {
-        await Homework.destroy({where: {event_id: req.params.event_id}})
+        await Homework.destroy({where: {hw_id: req.params.hw_id}})
             res.status(204)
     } catch (e) {
         next(e)

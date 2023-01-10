@@ -1,7 +1,6 @@
 import  User  from "../../utils/models/user"
 import {Request, Response, NextFunction} from "express"
 import { authorize, admin } from "../../middlewares/auth"
-import { RequestWithUser } from "../../utils/interfaces"
 const user_router = require("express").Router()
 
 //ADMIN ROUTES: 
@@ -90,7 +89,7 @@ user_router.get("/:user_id", authorize, async(req:Request, res:Response, next:Ne
     }
 })
 
-user_router.put("/me", authorize, async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => {
+user_router.put("/me", authorize, async(req:Request, res:Response, next:NextFunction):Promise<void> => {
     try {
         if (req.user) {
             const edited_user = await User.update(req.body, {
@@ -111,7 +110,7 @@ user_router.put("/me", authorize, async(req:RequestWithUser, res:Response, next:
     }
 })
 
-user_router.delete("/me", authorize, async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => {
+user_router.delete("/me", authorize, async(req:Request, res:Response, next:NextFunction):Promise<void> => {
     try {
         if (req.user) {
             const deleted_user = await User.destroy({
@@ -131,4 +130,4 @@ user_router.delete("/me", authorize, async(req:RequestWithUser, res:Response, ne
     }
 })
 
-module.exports = user_router
+export default user_router

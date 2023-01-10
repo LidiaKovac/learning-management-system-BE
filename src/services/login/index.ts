@@ -1,13 +1,12 @@
 import  User  from "../../utils/models/user"
 import {Request, Response, NextFunction} from "express"
-import { ValidationErrorItem } from "sequelize"
+// import {Object } from "sequelize"
 const login_router = require("express").Router()
 const bcryptjs = require("bcryptjs")
 const bcrypt = require("bcrypt")
 const moment = require("moment")
 import {cloudinaryMulter_img} from "../../utils/config/cloudinary"
 import { authenticate, authorize } from "../../middlewares/auth"
-import { RequestWithUser } from "../../utils/interfaces"
 
 //PUBLIC ROUTES 
 login_router.post("/new", cloudinaryMulter_img.single("profile_picture"), async(req:Request, res:Response, next:NextFunction):Promise<void>=> {
@@ -15,9 +14,10 @@ login_router.post("/new", cloudinaryMulter_img.single("profile_picture"), async(
         
         await User.create({...req.body, password: await bcryptjs.hash(req.body.password, 10), birthday: moment(req.body.birthday), profile_picture : req.file ? req.file.path : "https://placehold.it/200x200" })
         res.status(201).send({message: "Created", status: 201})
-    } catch (e) {
+    } catch (e:any) {
         if (e.errors) {
-            const errors:Array<ValidationErrorItem> = e.errors
+            const errors:Array<{type: string, path: string}> = e.errors
+            //look for sql error type
             errors.forEach(async error => {
                 if (error.type === "notNull Violation") {
                     res.status(400).send({message: `Missing ${error.path}`, status: 400})
@@ -32,7 +32,7 @@ login_router.post("/new", cloudinaryMulter_img.single("profile_picture"), async(
     }
 })
 
-login_router.post("/", async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => { 
+login_router.post("/", async(req:Request, res:Response, next:NextFunction):Promise<void> => { 
     try {
        if (!req.body.email || !req.body.password || (!req.body.email && !req.body.password)) {
         res.status(400).send({message: "Email or password not provided"})
@@ -61,7 +61,7 @@ login_router.post("/", async(req:RequestWithUser, res:Response, next:NextFunctio
 
 //Logged in ONLY routes: 
 
-login_router.get("/me", authorize, async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => { //gets logged in user's info
+login_router.get("/me", authorize, async(req:Request, res:Response, next:NextFunction):Promise<void> => { //gets logged in user's info
     try {
         if (req?.user?.user_id) {
 
@@ -83,7 +83,7 @@ login_router.get("/me", authorize, async(req:RequestWithUser, res:Response, next
     }
 })
 
-login_router.get("/logout", authorize, async(req:RequestWithUser, res:Response, next:NextFunction):Promise<void> => {
+login_router.get("/logout", authorize, async(req:Request, res:Response, next:NextFunction):Promise<void> => {
     try {
         await res.clearCookie("user")
         await res.clearCookie("token")
@@ -94,4 +94,4 @@ login_router.get("/logout", authorize, async(req:RequestWithUser, res:Response, 
 })
 
 
-module.exports = login_router
+export default login_router

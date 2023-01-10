@@ -1,14 +1,14 @@
 //GENERAL
-const class_router = require("express").Router();
+
 import { Op } from "sequelize";
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, Router } from "express";
 import { admin, authorize, teacher, student } from "../../middlewares/auth";
-import { RequestWithUser } from "../../utils/interfaces";
 import Class from "../../utils/models/class";
 import Students_Class from "../../utils/models/student_class";
 import User from "../../utils/models/user";
 import Section from "../../utils/models/section";
 import Material from "../../utils/models/files";
+const class_router = Router();
 
 class_router.get(
   "/admin/all",
@@ -31,7 +31,7 @@ class_router.post(
   authorize,
   teacher,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -66,7 +66,7 @@ class_router.post(
   "/enroll/:class_id",
   authorize,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -98,7 +98,7 @@ class_router.get(
   authorize,
   teacher,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -121,7 +121,7 @@ class_router.post(
   authorize,
   teacher,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -160,7 +160,7 @@ class_router.get(
   authorize,
   student,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -192,7 +192,7 @@ class_router.get(
   "/:class_id",
   authorize,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -230,7 +230,7 @@ class_router.put(
   authorize,
   teacher,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -252,7 +252,7 @@ class_router.delete(
   authorize,
   teacher,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -265,4 +265,4 @@ class_router.delete(
   }
 );
 
-module.exports = class_router;
+export default class_router

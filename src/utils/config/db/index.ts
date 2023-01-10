@@ -1,9 +1,9 @@
-const sequelize = require("./sequelize")
+import sqlize from "./sqlize"
 
 
-sequelize
+sqlize
   .authenticate()
   .then(() => console.log("💡 DB CONNECTED!"))
   .catch((e:Error) => console.log("❌ CONNECTION FAILED! Error: ", e));
 
-module.exports = {sequelize};
+export default sqlize

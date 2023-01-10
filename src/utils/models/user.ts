@@ -65,7 +65,7 @@ class User extends Model {
 					allowNull: false,
 				},
 				birthday: {
-					type: DATE,
+					type: STRING,
 					allowNull: true,
 				},
 				profile_picture: {

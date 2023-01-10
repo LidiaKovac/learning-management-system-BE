@@ -5,7 +5,6 @@ import Homework from "../../utils/models/homework"
 
 import { Request, Response, NextFunction } from "express"
 import { admin, authorize, student, teacher } from "../../middlewares/auth"
-import { RequestWithUser } from "../../utils/interfaces"
 
 hw_router.get(
 	"/admin/all",
@@ -23,7 +22,7 @@ hw_router.get(
 	}
 )
 
-hw_router.post("/:event_id", authorize, student, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+hw_router.post("/:event_id", authorize, student, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
         console.log(req.body)
         const new_homework = await Homework.create({content: req.body.content, 
@@ -36,7 +35,7 @@ hw_router.post("/:event_id", authorize, student, async(req: RequestWithUser, res
     }
 } )
 
-hw_router.get("/created/me", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+hw_router.get("/created/me", authorize, teacher, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     //GET HW SUBMITTED BY LOGGED USER
     try {
         const events = await Homework.findAll({where: {
@@ -50,7 +49,7 @@ hw_router.get("/created/me", authorize, teacher, async(req: RequestWithUser, res
     }
 } )
 
-hw_router.get("/:event_id", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+hw_router.get("/:event_id", authorize, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
         const hw = await Homework.findAll({where: {
             EventEventId: req.params.event_id
@@ -63,7 +62,7 @@ hw_router.get("/:event_id", authorize, async(req: RequestWithUser, res: Response
     }
 } )
 
-hw_router.put("/:hw_id", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+hw_router.put("/:hw_id", authorize, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
         const event = await Homework.update(req.body, {where: {event_id: req.params.event_id}})
         if (event) {
@@ -74,7 +73,7 @@ hw_router.put("/:hw_id", authorize, async(req: RequestWithUser, res: Response, n
     }
 } )
 
-hw_router.put("/grade/:hw_id", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+hw_router.put("/grade/:hw_id", authorize, teacher, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
         const hw = await Homework.update(req.body, {where: {hw_id: req.params.hw_id}})
         if (hw) {
@@ -85,7 +84,7 @@ hw_router.put("/grade/:hw_id", authorize, teacher, async(req: RequestWithUser, r
     }
 } )
 
-hw_router.delete("/:hw_id", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+hw_router.delete("/:hw_id", authorize, teacher, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
         await Homework.destroy({where: {hw_id: req.params.hw_id}})
             res.status(204)
@@ -99,4 +98,4 @@ hw_router.delete("/:hw_id", authorize, teacher, async(req: RequestWithUser, res:
 
 
 
-module.exports = hw_router
+export default hw_router

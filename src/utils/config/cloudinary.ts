@@ -1,7 +1,8 @@
-const cloudinary = require("cloudinary").v2
-const multer = require("multer");
+import {v2 as cloudinary} from "cloudinary"
+import multer from "multer";
 const {CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET} = process.env
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
+import { CloudinaryStorage,  } from "multer-storage-cloudinary";
+import {UploadApiOptions} from "cloudinary"
 
 cloudinary.config({
   cloud_name: CLOUDINARY_CLOUD_NAME,
@@ -12,30 +13,31 @@ cloudinary.config({
 const storage_img = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    allowed_formats: ["png", "jpg", "gif"],
-    folder: "lms_images",
+    
+    ["allowed_formats" as keyof UploadApiOptions]: ["png", "jpg", "gif"],
+    ["folder" as keyof UploadApiOptions]: "lms_images",
   },
 });
 const storage_pdf = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    allowed_formats: ["pdf"],
-    folder: "lms_pdf",
+    ["allowed_formats" as keyof UploadApiOptions]: ["pdf"],
+    ["folder" as keyof UploadApiOptions]: "lms_pdf",
   },
 });
 const storage_video = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    resource_type: "video",
-    allowed_formats: ["mp4", "mkv"],
-    folder: "lms_video",
+    ["resource_type" as keyof UploadApiOptions]: "video",
+    ["allowed_formats" as keyof UploadApiOptions]: ["mp4", "mkv"],
+    ["folder" as keyof UploadApiOptions]: "lms_video",
   },
 });
 const storage_audio = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    resource_type: "video",
-    folder: "lms_audio",
+    ["resource_type" as keyof UploadApiOptions]: "video",
+    ["folder" as keyof UploadApiOptions]: "lms_audio",
   },
 });
 

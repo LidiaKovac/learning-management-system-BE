@@ -5,7 +5,6 @@ import Todo from "../../utils/models/todo";
 
 import { Request, Response, NextFunction } from "express";
 import { admin, authorize, teacher } from "../../middlewares/auth";
-import { RequestWithUser } from "../../utils/interfaces";
 
 todo_router.get(
   "/admin/all",
@@ -28,7 +27,7 @@ todo_router.post(
   authorize,
   teacher,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -49,7 +48,7 @@ todo_router.get(
   authorize,
   teacher,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -73,7 +72,7 @@ todo_router.put(
   authorize,
   teacher,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -95,7 +94,7 @@ todo_router.delete(
   authorize,
   teacher,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -108,4 +107,4 @@ todo_router.delete(
   }
 );
 
-module.exports = todo_router;
+export default todo_router;

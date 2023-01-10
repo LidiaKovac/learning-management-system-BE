@@ -10,7 +10,6 @@ import Files from "../../utils/models/files";
 
 import { Request, Response, NextFunction } from "express";
 import { admin, authorize } from "../../middlewares/auth";
-import { RequestWithUser } from "../../utils/interfaces";
 
 //ENVIRONMENT
 const {
@@ -63,7 +62,7 @@ files_router.get(
   "/me",
   authorize,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -87,7 +86,7 @@ files_router.post(
   "/upload/markdown",
   authorize,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -118,7 +117,7 @@ files_router.post(
   authorize,
   multer().single("material"),
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -144,7 +143,7 @@ files_router.post(
   authorize,
   multer().single("material"),
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -170,7 +169,7 @@ files_router.post(
   authorize,
   multer().single("material"),
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -195,7 +194,7 @@ files_router.post(
   authorize,
   multer().single("material"),
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -219,7 +218,7 @@ files_router.post(
 files_router.get(
   "/download/:file_id",
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -238,7 +237,7 @@ files_router.put(
   "/:file_id",
   authorize,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -279,7 +278,7 @@ files_router.delete(
   "/:file_id",
   authorize,
   async (
-    req: RequestWithUser,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
@@ -311,4 +310,4 @@ files_router.delete(
   }
 );
 
-module.exports = files_router;
+export default files_router;

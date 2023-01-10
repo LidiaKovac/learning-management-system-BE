@@ -1,8 +1,8 @@
 import { NextFunction, Router } from "express";
 import { Request } from "express-serve-static-core";
-const express = require('express')
-const cors = require('cors')
-const cookieParser = require("cookie-parser")
+import express from "express"
+import cors from "cors"
+import cookieParser from "cookie-parser"
 
 const app = express()
 //do not declare db
@@ -10,7 +10,7 @@ const app = express()
 
 app.use(cors({
     origin: [
-      new URL(process.env.FE_URI!),
+      process.env.FE_URI as string,
       //"http://localhost:3002/",
       //"http://localhost:3000/",
     ],
@@ -24,7 +24,7 @@ app.use(require("helmet")())
 app.options('*', cors(
   {
     origin: [
-      new URL(process.env.FE_URI!),
+      process.env.FE_URI as string,
       //"http://localhost:3002/",
       //"http://localhost:3000/",
     ],
@@ -35,13 +35,13 @@ app.options('*', cors(
 ))
 
 
-const userRouter =  require("./services/users")
-const loginRouter = require("./services/login")
-const filesRouter = require("./services/files")
-const eventsRouter = require("./services/events")
-const classRouter = require("./services/classes")
-const hwRouter = require("./services/homework")
-const todoRouter = require("./services/todo")
+import userRouter from "./services/users";
+import loginRouter from "./services/login";
+import filesRouter from "./services/files";
+import eventsRouter from "./services/events";
+import classRouter from "./services/classes";
+import hwRouter from "./services/homework";
+import todoRouter from "./services/todo";
 
 app.use("/user", userRouter)
 app.use("/login", loginRouter)
@@ -55,4 +55,4 @@ app.use("/todo", todoRouter)
 
 app.use(cookieParser())
 
-module.exports = app
+export default app

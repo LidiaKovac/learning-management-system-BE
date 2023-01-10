@@ -34,7 +34,7 @@ class Class extends Model {
                     allowNull: true
                 },
 				author: {
-					type: NUMBER,
+					type: INTEGER,
 					allowNull: false
 				}
 			},

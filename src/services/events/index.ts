@@ -8,7 +8,6 @@ import {Op} from "sequelize"
 
 import { Request, Response, NextFunction } from "express"
 import { admin, authorize, teacher } from "../../middlewares/auth"
-import { RequestWithUser } from "../../utils/interfaces"
 import Students_Class from "../../utils/models/student_class"
 import Homework from "../../utils/models/homework"
 
@@ -28,7 +27,7 @@ event_router.get(
 	}
 )
 
-event_router.post("/", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+event_router.post("/", authorize, teacher, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
         const new_event = await EventM.create({...req.body, 
             UserUserId: req.user.user_id})
@@ -38,7 +37,7 @@ event_router.post("/", authorize, teacher, async(req: RequestWithUser, res: Resp
     }
 } )
 
-event_router.get("/created/me", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+event_router.get("/created/me", authorize, teacher, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     //GET EVENTS CREATED BY LOGGED USER
     try {
         const events = await EventM.findAll({where: {
@@ -52,7 +51,7 @@ event_router.get("/created/me", authorize, teacher, async(req: RequestWithUser, 
     }
 } )
 
-event_router.get("/me", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+event_router.get("/me", authorize, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     //GETS EVENTS WHOSE STUDENT IS INVITED TO 
     try {
         const classes = await Students_Class.findAll({where: {
@@ -72,7 +71,7 @@ event_router.get("/me", authorize, async(req: RequestWithUser, res: Response, ne
         next(e)
     }
 } )
-event_router.get("/homework/me", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+event_router.get("/homework/me", authorize, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
         const classes = await Students_Class.findAll({where: {
             UserUserId: req.user.user_id
@@ -93,7 +92,7 @@ event_router.get("/homework/me", authorize, async(req: RequestWithUser, res: Res
     }
 } )
 
-event_router.get("/homework/teacher", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+event_router.get("/homework/teacher", authorize, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
 
        const events = await EventM.findAll({where: {
@@ -117,7 +116,7 @@ event_router.get("/homework/teacher", authorize, async(req: RequestWithUser, res
 } )
 
 
-event_router.get("/search/id/:event_id", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+event_router.get("/search/id/:event_id", authorize, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
         const event = await EventM.findByPk(req.params.event_id)
         if (event) {
@@ -128,7 +127,7 @@ event_router.get("/search/id/:event_id", authorize, async(req: RequestWithUser, 
     }
 } )
 
-event_router.get("/search/date/:date", authorize, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+event_router.get("/search/date/:date", authorize, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
         const date = moment(req.params.date).format("YYYY-MM-DD")
         
@@ -145,7 +144,7 @@ event_router.get("/search/date/:date", authorize, async(req: RequestWithUser, re
     }
 } )
 
-event_router.put("/:event_id", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+event_router.put("/:event_id", authorize, teacher, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
         const event = await EventM.update(req.body, {where: {event_id: req.params.event_id}})
         if (event) {
@@ -156,7 +155,7 @@ event_router.put("/:event_id", authorize, teacher, async(req: RequestWithUser, r
     }
 } )
 
-event_router.delete("/:event_id", authorize, teacher, async(req: RequestWithUser, res: Response, next: NextFunction):Promise<void> => {
+event_router.delete("/:event_id", authorize, teacher, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
         await EventM.destroy({where: {event_id: req.params.event_id}})
             res.status(204)
@@ -170,4 +169,4 @@ event_router.delete("/:event_id", authorize, teacher, async(req: RequestWithUser
 
 
 
-module.exports = event_router
+export default event_router

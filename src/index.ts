@@ -1,12 +1,12 @@
-require("dotenv").config()
-const express = require('express')
-const app = require("./server")
-const db = require("./utils/config/db")
+import {config} from "dotenv"
+import app from "./server"
+import db from "./utils/config/db/index"
+import endpoints from "express-list-endpoints"
 const {PORT} = process.env
-const endpoints = require("express-list-endpoints")
+config()
 
-db.sequelize.sync({ force: false }).then((result:any) => {
-    app.listen(PORT, () => {
+db.sync({ force: true }).then((result:any) => {
+    app.listen(PORT || 3001, () => {
       console.log(
         "❗ Server is running on",
         PORT,

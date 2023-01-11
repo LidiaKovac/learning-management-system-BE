@@ -18,8 +18,7 @@ const sectionSchema = new mongoose.Schema<ISection>({
 	},
 	files: [{
 		type: mongoose.Schema.Types.ObjectId, ref: "Files"
-	}],
-
+	}]
 
 }, { timestamps: true, versionKey: false })
 

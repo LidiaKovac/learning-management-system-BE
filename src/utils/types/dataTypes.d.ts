@@ -1,10 +1,3 @@
-
-declare namespace Express {
-	interface Request {
-		user: User
-	}
-}
-
 interface IUser {
 	_id: import("mongoose").Types.ObjectId
 
@@ -26,6 +19,7 @@ interface IClass {
 	name: string
 	description: string
 	author: import("mongoose").Types.ObjectId
+	sections: Array<import("mongoose").Types.ObjectId>
 
 	createdAt: Date
 	updatedAt: Date
@@ -86,21 +80,4 @@ interface ITask {
 	author: import("mongoose").Types.ObjectId
 	class: import("mongoose").Types.ObjectId
 	color: string
-}
-
-//ERRORS:
-
-
-//AUTH
-
-interface DecodedToken {
-	user_id: number | null
-	birthday: Date | null
-	status: string
-}
-
-
-
-interface CustomError {
-	message: String
 }

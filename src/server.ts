@@ -9,15 +9,15 @@ const app = express()
 console.log("Initializing your API! ⚙️")
 
 app.use(cors({
-    origin: [
-      process.env.FE_URI as string,
-      //"http://localhost:3002/",
-      //"http://localhost:3000/",
-    ],
-    credentials: true,
-    exposedHeaders: ["set-cookie"],
-    
-  })
+  origin: [
+    process.env.FE_URI as string,
+    //"http://localhost:3002/",
+    //"http://localhost:3000/",
+  ],
+  credentials: true,
+  exposedHeaders: ["set-cookie"],
+
+})
 );
 app.use(express.json())
 app.use(require("helmet")())
@@ -30,26 +30,26 @@ app.options('*', cors(
     ],
     credentials: true,
     exposedHeaders: ["set-cookie"],
-    
+
   }
 ))
 
 
-import userRouter from "./services/users";
-import loginRouter from "./services/login";
-import filesRouter from "./services/files";
-import eventsRouter from "./services/events";
+// import userRouter from "./services/users";
+// import loginRouter from "./services/login";
+// import filesRouter from "./services/files";
+// import eventsRouter from "./services/events";
+// import hwRouter from "./services/homework";
+// import todoRouter from "./services/todo";
 import classRouter from "./services/classes";
-import hwRouter from "./services/homework";
-import todoRouter from "./services/todo";
 
-app.use("/user", userRouter)
-app.use("/login", loginRouter)
-app.use("/files", filesRouter)
-app.use("/event", eventsRouter)
+// app.use("/user", userRouter)
+// app.use("/login", loginRouter)
+// app.use("/files", filesRouter)
+// app.use("/event", eventsRouter)
+// app.use("/homework", hwRouter)
+// app.use("/todo", todoRouter)
 app.use("/class", classRouter)
-app.use("/homework", hwRouter)
-app.use("/todo", todoRouter)
 
 
 

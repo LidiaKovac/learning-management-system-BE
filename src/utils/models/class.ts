@@ -11,7 +11,11 @@ const classSchema = new mongoose.Schema<IClass>({
     },
     author: {
         type: mongoose.Schema.Types.ObjectId, ref: "User"
-    }
+    },
+	sections: [{
+        type: mongoose.Schema.Types.ObjectId, ref: "Section"
+
+	}]
 
 }, { timestamps: true, versionKey: false})
 

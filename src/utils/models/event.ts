@@ -28,10 +28,10 @@ const eventSchema = new mongoose.Schema<IEvent>({
 		required: true
 	},
 	author: {
-        type: mongoose.Schema.Types.ObjectId, ref: "User"
-    },
+		type: mongoose.Schema.Types.ObjectId, ref: "User"
+	},
 	classes: [{
-        type: mongoose.Schema.Types.ObjectId, ref: "Class"
+		type: mongoose.Schema.Types.ObjectId, ref: "Class"
 	}]
 
 }, { timestamps: true, versionKey: false })

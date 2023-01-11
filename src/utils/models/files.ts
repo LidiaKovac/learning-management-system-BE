@@ -1,49 +1,30 @@
-import { STRING, ENUM, INTEGER, Model, Sequelize } from "sequelize";
+import mongoose from "mongoose"
 
-class Material extends Model {
-  file_id!: number;
-  name!: string;
-  type!: string;
-  description!: string;
-  section_ref!: number;
+const fileSchema = new mongoose.Schema<IFile>({
+	
+    
+    name: {
+      type: String,
+      required: true,
+    },
+    type: {
+      type: String,
+      enum: ["pdf", "markdown", "audio", "video", "image"],
+      required: true,
+    },
+    description: {
+      type: String,
+      required: false,
+    },
+    section: {
+      type: mongoose.Schema.Types.ObjectId, ref: "Section"
+    },
+  
+	author: {
+		type: mongoose.Schema.Types.ObjectId, ref: "User"
+	},
+	
 
-  createdAt!: Date;
-  updatedAd!: Date;
+}, { timestamps: true, versionKey: false })
 
-  static initialize(sequelize: Sequelize) {
-    this.init(
-      {
-        file_id: {
-          allowNull: false,
-          autoIncrement: true,
-          primaryKey: true,
-          type: INTEGER,
-          unique: true,
-        },
-        name: {
-          type: STRING(50),
-          allowNull: false,
-        },
-        type: {
-          type: ENUM("pdf", "markdown", "audio", "video", "image"),
-          allowNull: false,
-        },
-        description: {
-          type: STRING(1000000),
-          allowNull: true,
-        },
-        section_ref: {
-          type: INTEGER,
-          allowNull: true,
-        },
-      },
-      {
-        sequelize,
-        timestamps: true,
-        modelName: "Files",
-      }
-    );
-  }
-}
-
-export default Material;
+export default mongoose.model<IFile>("File", fileSchema) as mongoose.Model<IFile>

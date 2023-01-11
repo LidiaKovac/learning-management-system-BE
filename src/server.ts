@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser"
 
 const app = express()
 //do not declare db
-
+console.log("Initializing your API! ⚙️")
 
 app.use(cors({
     origin: [

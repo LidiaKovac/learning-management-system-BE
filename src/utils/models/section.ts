@@ -1,53 +1,26 @@
-import { NUMBER } from "sequelize"
-import {
-	STRING,
-	INTEGER,
-	Model,
-	Sequelize,
-} from "sequelize"
-import Material from "./files"
+import mongoose from "mongoose"
 
-class Section extends Model {
-	section_id!: number
-	name!: string
-    description!: string
-	files?: Array<Material>
-    //add optional course ref to files
-
-	createdAt!: Date
-	updatedAd!: Date
-
-	static initialize(sequelize: Sequelize) {
-		this.init(
-			{
-				section_id: {
-					allowNull: false,
-					autoIncrement: true,
-					primaryKey: true,
-					type: INTEGER,
-					unique: true,
-				},
-				name: {
-                    type: STRING(50), 
-                    allowNull: false
-                },
-				description: {
-                    type: STRING(3000), 
-                    allowNull: true
-                },
-				ClassClassId: {
-					type: INTEGER,
-					allowNull: false
-				}
-			},
-			{
-				sequelize,
-				timestamps: true,
-				modelName: "Section",
-			}
-		)
-	}
-}
+const sectionSchema = new mongoose.Schema<ISection>({
+	
+	author: {
+		type: mongoose.Schema.Types.ObjectId, ref: "User"
+	},
+	class: {
+		type: mongoose.Schema.Types.ObjectId, ref: "Class"
+	},
+	name: {
+		type: String,
+		required: true
+	},
+	description: {
+		type: String,
+		required: true
+	},
+	files: [{
+		type: mongoose.Schema.Types.ObjectId, ref: "Files"
+	}],
 
 
-export default Section
+}, { timestamps: true, versionKey: false })
+
+export default mongoose.model<ISection>("Section", sectionSchema) as mongoose.Model<ISection>

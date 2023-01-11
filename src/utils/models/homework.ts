@@ -1,56 +1,21 @@
-import {
-	STRING,
-	INTEGER,
-	Model,
-	Sequelize,
-} from "sequelize"
+import mongoose from "mongoose"
 
-class Homework extends Model {
-	hw_id!: number
-	author!: number //id of the creator
-
-    content!: string
-    //graded!: boolean MOVED TO EVENT
-    grade!: number
-
-	createdAt!: Date
-	updatedAd!: Date
-
-	static initialize(sequelize: Sequelize) {
-		this.init(
-			{
-				hw_id: {
-					allowNull: false,
-					autoIncrement: true,
-					primaryKey: true,
-					type: INTEGER,
-					unique: true,
-				},
-				content: {
-                    type: STRING(10000), 
-                    allowNull: true
-                },
-				author: {
-					type: INTEGER,
-					allowNull: false
-				},
-                grade: {
-                    type: INTEGER,
-                    validate: {
-                        max: 10,
-                        min: 0
-                    },
-                    allowNull: true
-                }
-			},
-			{
-				sequelize,
-				timestamps: true,
-				modelName: "Homeworks",
-			}
-		)
+const homeworkSchema = new mongoose.Schema<IHomework>({
+	content: {
+		type: String,
+		required: true
+	},
+	author: {
+		type: mongoose.Schema.Types.ObjectId, ref: "User"
+	},
+	grade: {
+		type: Number,
+		max: 10,
+		min: 0,
+		required: false
 	}
-}
 
 
-export default Homework
+}, { timestamps: true, versionKey: false })
+
+export default mongoose.model<IHomework>("Homework", homeworkSchema) as mongoose.Model<IHomework>

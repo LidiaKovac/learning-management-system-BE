@@ -1,36 +1,26 @@
-import { STRING, INTEGER, Model, Sequelize, BOOLEAN } from "sequelize";
+import mongoose from "mongoose"
 
-class Todo extends Model {
-  todo_id!: number;
-  task!: string;
-  done!: boolean;
-
-  static initialize(sequelize: Sequelize) {
-    this.init(
-      {
-        todo_id: {
-          allowNull: false,
-          autoIncrement: true,
-          primaryKey: true,
-          type: INTEGER,
-          unique: true,
-        },
-        task: {
-          type: STRING(50),
-          allowNull: false,
-        },
-        done: {
-          type: BOOLEAN,
-          allowNull: false,
-          defaultValue: false
-        },
-      },
-      {
-        sequelize,
-        modelName: "Todos",
-      }
-    );
+const task = new mongoose.Schema<ITask>({
+	
+	author: {
+		type: mongoose.Schema.Types.ObjectId, ref: "User"
+	},
+	class: {
+		type: mongoose.Schema.Types.ObjectId, ref: "Class"
+	},
+	color: {
+		type: String,
+		required: true
+	},
+	task: {
+		type: String,
+		required: true
+	},
+  done: {
+    type: Boolean,
+    default: false
   }
-}
 
-export default Todo;
+}, { timestamps: true, versionKey: false })
+
+export default mongoose.model<ITask>("Task", task) as mongoose.Model<ITask>

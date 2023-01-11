@@ -1,17 +1,17 @@
-import {config} from "dotenv"
+import { config } from "dotenv"
 import app from "./server"
-import db from "./utils/config/db/index"
 import endpoints from "express-list-endpoints"
-const {PORT} = process.env
+import mongoose, { ConnectOptions } from "mongoose"
+const { PORT, DB_URL } = process.env
 config()
 
-db.sync({ force: true }).then((result:any) => {
-    app.listen(PORT || 3001, () => {
-      console.log(
-        "❗ Server is running on",
-        PORT,
-        " with these endpoints: ",
-        endpoints(app)
-      );
+mongoose.connect(DB_URL as string, { useNewUrlParser: true } as ConnectOptions).then(() => console.log("🌚 The server has successfully connected to mongodb."))
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log("🌚 Server has started on port " + PORT + "!" + " \n🌝 The server has these endpoints: \n");
+      console.table(endpoints(app));
     });
+  })
+  .catch((e) => {
+    console.log("❌ CONNECTION FAILED! Error: ", e);
   });

@@ -1,51 +1,18 @@
-import { NUMBER } from "sequelize"
-import {
-	STRING,
-	INTEGER,
-	Model,
-	Sequelize,
-} from "sequelize"
+import mongoose from "mongoose"
 
-class Class extends Model {
-	class_id!: number
-	name!: string
-    description!: string
-	author!: number
+const classSchema = new mongoose.Schema<IClass>({
+    name: {
+        type: String,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true
+    },
+    author: {
+        type: mongoose.Schema.Types.ObjectId, ref: "User"
+    }
 
-	createdAt!: Date
-	updatedAd!: Date
+}, { timestamps: true, versionKey: false})
 
-	static initialize(sequelize: Sequelize) {
-		this.init(
-			{
-				class_id: {
-					allowNull: false,
-					autoIncrement: true,
-					primaryKey: true,
-					type: INTEGER,
-					unique: true,
-				},
-				name: {
-                    type: STRING(50), 
-                    allowNull: false
-                },
-				description: {
-                    type: STRING(3000), 
-                    allowNull: true
-                },
-				author: {
-					type: INTEGER,
-					allowNull: false
-				}
-			},
-			{
-				sequelize,
-				timestamps: true,
-				modelName: "Classes",
-			}
-		)
-	}
-}
-
-
-export default Class
+export default mongoose.model<IClass>("Class", classSchema) as mongoose.Model<IClass>

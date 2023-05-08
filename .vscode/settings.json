@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "pgOptions": {
+                "ssl": true
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "driver": "CockroachDB",
+            "name": "LMS",
+            "connectString": "postgresql://lidia:kBlfhrG7mWbW8nMBCiewGw@oval-puffin-7722.8nj.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-fullpostgresql://lidia:kBlfhrG7mWbW8nMBCiewGw@oval-puffin-7722.8nj.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full"
+        }
+    ]
+}

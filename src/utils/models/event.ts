@@ -1,39 +1,65 @@
-import mongoose from "mongoose"
+import {
+	STRING,
+	ENUM,
+	INTEGER,
+	BOOLEAN,
+	Model,
+	Sequelize,
+	UUIDV4,
+	UUID,
+} from "sequelize"
 
-const eventSchema = new mongoose.Schema<IEvent>({
+class Event extends Model {
+	id!: string
+	name!: string
+	type!: string
+    description!: string
+	startDate!: String
+    endDate!: String
+	graded!: boolean
 
-	name: {
-		type: String,
-		required: true
-	},
-	type: {
-		type: String,
-		enum: ["homework", "exam"],
-		required: true
-	},
-	graded: {
-		type: Boolean,
-		required: true,
-	},
-	description: {
-		type: String,
-		required: true
-	},
-	startDate: {
-		type: Date,
-		required: true
-	},
-	endDate: {
-		type: Date,
-		required: true
-	},
-	author: {
-		type: mongoose.Schema.Types.ObjectId, ref: "User"
-	},
-	classes: [{
-		type: mongoose.Schema.Types.ObjectId, ref: "Class"
-	}]
 
-}, { timestamps: true, versionKey: false })
+	static initialize(sequelize: Sequelize) {
+		this.init(
+			{
+				id: {
+					primaryKey: true,
+					type: UUID,
+					defaultValue: UUIDV4
+				},
+				name: {
+                    type: STRING(50), 
+                    allowNull: false
+                },
+				type: {
+                    type: STRING(100), 
+                    allowNull: false
+                },
+				graded: {
+					type: BOOLEAN,
+					allowNull: false,
+					defaultValue: false
+				},
+				description: {
+                    type: STRING(3000), 
+                    allowNull: true
+                },
+                startDate: {
+                    type: STRING,
+                    allowNull: false
+                },
+                endDate: {
+                    type: STRING,
+                    allowNull: false
+                },
+			},
+			{
+				sequelize,
+				timestamps: true,
+				modelName: "Events",
+			}
+		)
+	}
+}
 
-export default mongoose.model<IEvent>("Event", eventSchema) as mongoose.Model<IEvent>
+export default Event

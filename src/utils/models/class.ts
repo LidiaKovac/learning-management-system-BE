@@ -1,22 +1,46 @@
-import mongoose from "mongoose"
+import { NUMBER, UUID, UUIDV4 } from "sequelize"
+import {
+	STRING,
+	INTEGER,
+	Model,
+	Sequelize,
+} from "sequelize"
 
-const classSchema = new mongoose.Schema<IClass>({
-    name: {
-        type: String,
-        required: true
-    },
-    description: {
-        type: String,
-        required: true
-    },
-    author: {
-        type: mongoose.Schema.Types.ObjectId, ref: "User"
-    },
-	sections: [{
-        type: mongoose.Schema.Types.ObjectId, ref: "Section"
+class Class extends Model {
+	id!: string
+	name!: string
+	description!: string
+	author!: string
 
-	}]
+	static initialize(sequelize: Sequelize) {
+		this.init(
+			{
+				id: {
+					primaryKey: true,
+					type: UUID,
+					defaultValue: UUIDV4
+				},
+				name: {
+					type: STRING(50),
+					allowNull: false
+				},
+				description: {
+					type: STRING(3000),
+					allowNull: true
+				},
+				author: {
+					type: UUID,
+					//this is the fk for user
+					allowNull: false
+				}
+			},
+			{
+				sequelize,
+				timestamps: true,
+				modelName: "Classes",
+			}
+		)
+	}
+}
 
-}, { timestamps: true, versionKey: false})
-
-export default mongoose.model<IClass>("Class", classSchema) as mongoose.Model<IClass>
+export default Class

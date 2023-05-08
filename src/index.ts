@@ -1,17 +1,16 @@
 import { config } from "dotenv"
 import app from "./server"
 import endpoints from "express-list-endpoints"
-import mongoose, { ConnectOptions } from "mongoose"
+import db from "./utils/config/db/sequelize"
 config()
 const { PORT, DB_URI } = process.env
 
-mongoose.connect(DB_URI as string, { useNewUrlParser: true } as ConnectOptions).then(() => console.log("🌚 The server has successfully connected to mongodb."))
-  .then(() => {
+db.sync({ force: false }).then(() => {
     app.listen(PORT, () => {
       console.log("🌚 Server has started on port " + PORT + "!" + " \n🌝 The server has these endpoints: \n");
       console.table(endpoints(app));
     });
   })
-  .catch((e) => {
+  .catch((e:any) => {
     console.log("❌ CONNECTION FAILED! Error: ", e);
   });

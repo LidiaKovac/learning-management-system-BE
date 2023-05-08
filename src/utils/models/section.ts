@@ -1,25 +1,46 @@
-import mongoose from "mongoose"
+import { NUMBER, UUID, UUIDV4 } from "sequelize"
+import {
+	STRING,
+	INTEGER,
+	Model,
+	Sequelize,
+} from "sequelize"
+import Material from "./files"
 
-const sectionSchema = new mongoose.Schema<ISection>({
-	
-	author: {
-		type: mongoose.Schema.Types.ObjectId, ref: "User"
-	},
-	class: {
-		type: mongoose.Schema.Types.ObjectId, ref: "Class"
-	},
-	name: {
-		type: String,
-		required: true
-	},
-	description: {
-		type: String,
-		required: true
-	},
-	files: [{
-		type: mongoose.Schema.Types.ObjectId, ref: "Files"
-	}]
+class Section extends Model {
+	id!: string
+	name!: string
+    description!: string
+	// files?: Array<Material>
+    //add optional course ref to files
 
-}, { timestamps: true, versionKey: false })
 
-export default mongoose.model<ISection>("Section", sectionSchema) as mongoose.Model<ISection>
+	static initialize(sequelize: Sequelize) {
+		this.init(
+			{
+				id: {
+					primaryKey: true,
+					type: UUID,
+					defaultValue: UUIDV4
+				},
+				name: {
+                    type: STRING(50), 
+                    allowNull: false
+                },
+				description: {
+                    type: STRING(3000), 
+                    allowNull: true
+                },
+				
+			},
+			{
+				sequelize,
+				timestamps: true,
+				modelName: "Section",
+			}
+		)
+	}
+}
+
+
+export default Section

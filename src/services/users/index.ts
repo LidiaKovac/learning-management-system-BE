@@ -3,6 +3,9 @@ import {Request, Response, NextFunction} from "express"
 import { authorize, admin } from "../../middlewares/auth"
 const user_router = require("express").Router()
 
+//class enrollment should be here
+
+
 // //ADMIN ROUTES: 
 // user_router.get("/admin", authorize, admin, async(req:Request,res:Response,next:NextFunction):Promise<void>=> {
 //     try {

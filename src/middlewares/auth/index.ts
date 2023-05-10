@@ -60,7 +60,7 @@ export const admin = async (
 ) => {
 	try {
 		if (req?.user?.id) {
-			const logged_user = await User.findAll({ where: { user_id: req.user.id } })
+			const logged_user = await User.findAll({ where: { id: req.user.id } })
 			if (logged_user[0].role === "admin") {
 				next()
 			} else {
@@ -79,7 +79,7 @@ export const student = async (
 ) => {
 	try {
 		if (req?.user?.id) {
-			const logged_user = await User.findAll({ where: { user_id: req.user.id } })
+			const logged_user = await User.findAll({ where: { id: req.user.id } })
 			if (logged_user[0].role === "student") {
 				next()
 			} else {
@@ -97,8 +97,8 @@ export const teacher = async (
 	next: NextFunction
 ) => {
 	try {
-		const logged_user = await User.findAll({ where: { user_id: req.user.id } })
-		if (logged_user[0].role === "teacher") {
+		const logged_user = await User.findAll({ where: { id: req.user.id } })
+		if (logged_user[0].role === "teacher" || logged_user[0].role === "admin") {
 			next()
 		} else {
 			res.status(403).send("You are not allowed to access this resource.")

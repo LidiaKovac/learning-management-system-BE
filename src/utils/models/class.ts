@@ -1,4 +1,4 @@
-import { NUMBER, UUID, UUIDV4 } from "sequelize"
+import { NUMBER, UUID, UUIDV4, BOOLEAN } from "sequelize"
 import {
 	STRING,
 	INTEGER,
@@ -11,6 +11,7 @@ class Class extends Model {
 	name!: string
 	description!: string
 	author!: string
+	isApproved!: boolean
 
 	static initialize(sequelize: Sequelize) {
 		this.init(
@@ -32,6 +33,11 @@ class Class extends Model {
 					type: UUID,
 					//this is the fk for user
 					allowNull: false
+				},
+				isApproved: {
+					type: BOOLEAN,
+					allowNull: false,
+					defaultValue: false
 				}
 			},
 			{

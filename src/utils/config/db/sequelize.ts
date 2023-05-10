@@ -29,6 +29,9 @@ models.forEach((model) => {
 Material.belongsTo(User) //will have the FK
 User.hasMany(Material)
 
+Material.belongsTo(Section, {foreignKey: "section_ref"})
+Section.hasMany(Material, {foreignKey: "section_ref"})
+
 EventM.belongsTo(User) //this is where we define WHO CREATED THE EVENT
 User.hasMany(EventM)
 
@@ -38,13 +41,13 @@ Class.belongsToMany(EventM, {through: "Events_Classes"})
 Class.belongsToMany(User, {through: "Students_Classes"})
 User.belongsToMany(Class, {through: "Students_Classes"})
 
-User.hasMany(Class)
-Class.belongsTo(User)
+User.hasMany(Class, {foreignKey: "author"})
+Class.belongsTo(User, {foreignKey: "author"})
 
 Homework.belongsTo(EventM)
 EventM.hasMany(Homework)
 
-Class.hasMany(Section)
+Class.hasMany(Section, {as: "sections"})
 Section.belongsTo(Class)
 
 Todo.belongsTo(User)

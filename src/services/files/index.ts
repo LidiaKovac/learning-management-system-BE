@@ -1,47 +1,52 @@
 // //GLOBALS for FIREBASE
-// (global as any).XMLHttpRequest = require("xhr2");
-// (global as any).WebSocket = require("ws");
+(global as any).XMLHttpRequest = require("xhr2");
+(global as any).WebSocket = require("ws");
 require("dotenv").config();
+import { config } from "dotenv"
+config()
 
 // //GENERAL
-const files_router = require("express").Router();
+import { Router } from "express"
 
 import Files from "../../utils/models/files";
 
 import { Request, Response, NextFunction } from "express";
 import { admin, authorize } from "../../middlewares/auth";
-
-// //ENVIRONMENT
-// const {
-//   FIREBASE_API_KEY,
-//   FIREBASE_AUTH_DOMAIN,
-//   FIREBASE_PROJ_ID,
-//   FIREBASE_BUCKET,
-//   FIREBASE_MESSAGING_ID,
-//   FIREBASE_APP_ID,
-//   FIREBASE_MEASUREMENT_ID,
-// } = process.env;
-
-// //FIREBASE / FILE UPLOAD
 import multer from "multer";
+import Material from "../../utils/models/files";
+// //ENVIRONMENT
 import firebase from "firebase";
 import "firebase/storage";
-import Material from "../../utils/models/files";
+import { getMulterFields } from "../../utils/tools";
+const {
+  FIREBASE_API_KEY,
+  FIREBASE_AUTH_DOMAIN,
+  FIREBASE_PROJ_ID,
+  FIREBASE_BUCKET,
+  FIREBASE_MESSAGING_ID,
+  FIREBASE_APP_ID,
+  FIREBASE_MEASUREMENT_ID,
+} = process.env;
 
-// const firebaseConfig = {
-//   apiKey: FIREBASE_API_KEY,
-//   authDomain: FIREBASE_AUTH_DOMAIN,
-//   projectId: FIREBASE_PROJ_ID,
-//   storageBucket: FIREBASE_BUCKET,
-//   messagingSenderId: FIREBASE_MESSAGING_ID,
-//   appId: FIREBASE_APP_ID,
-//   measurementId: FIREBASE_MEASUREMENT_ID,
-// };
+const firebaseConfig = {
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  projectId: FIREBASE_PROJ_ID,
+  storageBucket: FIREBASE_BUCKET,
+  messagingSenderId: FIREBASE_MESSAGING_ID,
+  appId: FIREBASE_APP_ID,
+  measurementId: FIREBASE_MEASUREMENT_ID,
+};
 
-// firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
+// //FIREBASE / FILE UPLOAD
+
+
+const filesRouter = Router();
+
 
 // //ADMIN ROUTES
-// files_router.get(
+// filesRouter.get(
 //   "/admin/all",
 //   authorize,
 //   admin,
@@ -58,7 +63,7 @@ import Material from "../../utils/models/files";
 // );
 
 //PUBLIC ROUTES
-files_router.get(
+filesRouter.get(
   "/me",
   authorize,
   async (
@@ -75,147 +80,52 @@ files_router.get(
       });
       if (files.length > 0) {
         res.status(200).send({ status: 200, content: files });
-      } else res.send({status: 204, content: []});
+      } else res.send({ status: 204, content: [] });
     } catch (e) {
       next(e);
     }
   }
 );
 
-files_router.post(
-  "/upload/markdown",
+
+filesRouter.post(
+  "/upload/",
   authorize,
+  multer().any(),
   async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-      const new_file = await Files.create({
-        ...req.body,
-        UserUserId: req.user.id,
-        description: req.body.material,
-      });
-      if (new_file) {
-        res
-          .status(201)
-          .send({
-            status: 201,
-            content: "Succesfully created.",
-            file_id: new_file.id,
-          });
+      const files = req.files as Express.Multer.File[]
+      const fileTypes = ["image", "pdf", "video", "audio"]
+      if (!fileTypes.includes(req.body.type)) {
+        res.status(400).send("Please enter a valid file type!")
       }
-    } catch (e) {
-      res.send(e);
-      next(e);
-    }
-  }
-);
-
-files_router.post(
-  "/upload/image",
-  authorize,
-  multer().single("material"),
-  async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
       let ref = firebase.storage().ref();
-      let file_ref = ref.child(`/lms_images/${req?.file?.originalname}`);
-      let bytes = new Uint8Array(req.file!.buffer);
-      await file_ref.put(bytes); //don't need content type as I already tested it works without specifying
+      let file_ref = ref.child(`/lms_${req.body.type}/${files[0].originalname}`);
+      let bytes = new Uint8Array(files[0].buffer);
+      await file_ref.put(bytes, 
+        req.body.type === "pdf" ? { contentType: "application/pdf" } 
+        : req.body.type === "video" ? { contentType: "video/mp4" } 
+        : req.body.type === "audio" ? {contentType :"audio/mp3"} : undefined );
+      console.log(file_ref.getDownloadURL());
+
       const new_file = await Files.create({
         ...req.body,
-        description: await file_ref.getDownloadURL(),
-        UserUserId: req.user.id,
+        file: await file_ref.getDownloadURL(),
+        UserId: req.user.id,
       });
-      res.status(201).send({ status: 201, path: new_file.description });
+      res.status(201).send({ status: 201, path: new_file.file });
     } catch (e) {
       next(e);
     }
   }
 );
 
-files_router.post(
-  "/upload/pdf",
-  authorize,
-  multer().single("material"),
-  async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      let ref = firebase.storage().ref();
-      //file_ref creates a ref for the file and the folder it's going to be uploaded in
-      let file_ref = ref.child(`/lms_pdf/${req?.file?.originalname}`);
-      let bytes = await new Uint8Array(req.file!.buffer); //creates a byte array
-      await file_ref.put(bytes, { contentType: "application/pdf" }); //IMPORTANT
-      const new_file = await Files.create({
-        ...req.body,
-        description: await file_ref.getDownloadURL(),
-        UserUserId: req.user.id,
-      });
-      res.status(201).send({ status: 201, path: new_file.description });
-    } catch (e) {
-      next(e);
-    }
-  }
-);
-files_router.post(
-  "/upload/video",
-  authorize,
-  multer().single("material"),
-  async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      let ref = firebase.storage().ref();
-      let file_ref = ref.child(`/lms_videos/${req?.file?.originalname}`);
-      let bytes = await new Uint8Array(req.file!.buffer);
-      await file_ref.put(bytes, { contentType: "video/mp4" }); //IMPORTANT
-      const new_file = await Files.create({
-        ...req.body,
-        description: await file_ref.getDownloadURL(),
-        UserUserId: req.user.id,
-      });
-      res.status(201).send({ status: 201, path: new_file.description });
-    } catch (e) {
-      next(e);
-    }
-  }
-);
-files_router.post(
-  "/upload/audio",
-  authorize,
-  multer().single("material"),
-  async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      let ref = firebase.storage().ref();
-      let file_ref = ref.child(`/lms_audios/${req?.file?.originalname}`);
-      let bytes = await new Uint8Array(req.file!.buffer);
-      await file_ref.put(bytes, { contentType: "audio/mp3" }); //IMPORTANT
-      const new_file = await Files.create({
-        ...req.body,
-        description: await file_ref.getDownloadURL(),
-        UserUserId: req.user.id,
-      });
-      res.status(201).send({ status: 201, path: new_file.description });
-    } catch (e) {
-      next(e);
-    }
-  }
-);
 
-files_router.get(
+filesRouter.get(
   "/download/:file_id",
   async (
     req: Request,
@@ -224,16 +134,16 @@ files_router.get(
   ): Promise<void> => {
     try {
       const file = await Material.findByPk(req.params.file_id)
-	  res.setHeader('Content-disposition', `attachment`)
-	  res.setHeader("Content-Type", "media-type")
-	  res.send(file)
+      res.setHeader('Content-disposition', `attachment`)
+      res.setHeader("Content-Type", "media-type")
+      res.send(file)
     } catch (e) {
       next(e);
     }
   }
 );
 
-files_router.put(
+filesRouter.put(
   "/:file_id",
   authorize,
   async (
@@ -249,7 +159,7 @@ files_router.put(
         },
       });
       if (file.length > 0) {
-        
+
         const edited_file = await Files.update(
           { ...req.body },
           {
@@ -274,7 +184,7 @@ files_router.put(
     }
   }
 );
-files_router.delete(
+filesRouter.delete(
   "/:file_id",
   authorize,
   async (
@@ -310,4 +220,4 @@ files_router.delete(
   }
 );
 
-export default files_router;
+export default filesRouter;

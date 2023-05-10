@@ -8,7 +8,7 @@ const bcrypt = require("bcrypt")
 const moment = require("moment")
 import { cloudinaryMulter_img } from "../../utils/config/cloudinary"
 import { authenticate, authorize } from "../../middlewares/auth"
-import { checkPassword } from "../../utils"
+import { checkPassword } from "../../utils/tools"
 
 //PUBLIC ROUTES
 login_router.post(

@@ -4,7 +4,7 @@ class Material extends Model {
   id!: string;
   name!: string;
   type!: string;
-  description!: string;
+  file!: string;
   section_ref!: number;
 
 
@@ -24,12 +24,12 @@ class Material extends Model {
           type: STRING(10),
           allowNull: false,
         },
-        description: {
+        file: {
           type: STRING(1000000),
           allowNull: true,
         },
         section_ref: {
-          type: INTEGER,
+          type: UUID,
           allowNull: true,
         },
       },

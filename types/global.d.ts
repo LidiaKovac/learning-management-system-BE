@@ -1,3 +1,13 @@
+interface DecodedToken {
+	user_id: number | null
+	birthday: Date | null
+	status: string
+}
+
+interface CustomError {
+	message: string
+}
+
 declare namespace Express {
 	interface Request {
 		user: {
@@ -28,12 +38,13 @@ type DecodedToken = {
 	status: string
 }
 
-interface CustomError {
-	message: String
-}
+
 
 interface ApiResponse {
 	status: number
 	message?: string 
 	data?: any
 }
+
+
+declare module "query-to-sequelize"

@@ -1,7 +1,13 @@
-import { NextFunction, Router } from "express";
-import { Request } from "express-serve-static-core";
 import express from "express"
 import cors from "cors"
+
+import userRouter from "./services/users";
+import loginRouter from "./services/login";
+import filesRouter from "./services/files";
+import eventsRouter from "./services/events";
+import hwRouter from "./services/homework";
+import todoRouter from "./services/todo";
+import classRouter from "./services/classes";
 
 const app = express()
 //do not declare db
@@ -18,8 +24,6 @@ app.use(cors({
 
 })
 );
-app.use(express.json())
-app.use(require("helmet")())
 app.options('*', cors(
   {
     origin: [
@@ -33,14 +37,9 @@ app.options('*', cors(
   }
 ))
 
+app.use(express.json())
+app.use(require("helmet")())
 
-import userRouter from "./services/users";
-import loginRouter from "./services/login";
-import filesRouter from "./services/files";
-import eventsRouter from "./services/events";
-import hwRouter from "./services/homework";
-import todoRouter from "./services/todo";
-import classRouter from "./services/classes";
 
 app.use("/user", userRouter)
 app.use("/login", loginRouter)
@@ -49,8 +48,6 @@ app.use("/event", eventsRouter)
 app.use("/homework", hwRouter)
 app.use("/todo", todoRouter)
 app.use("/class", classRouter)
-
-
 
 
 export default app

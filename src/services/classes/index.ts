@@ -1,19 +1,22 @@
 //GENERAL
 
+import { Model } from "sequelize-typescript"
 import { Op } from "sequelize";
 import { Request, Response, NextFunction, Router } from "express";
 import { admin, authorize, teacher, student } from "../../middlewares/auth";
+import q2s from "query-to-sequelize"
 import Class from "../../utils/models/class";
 import User from "../../utils/models/user";
 import Section from "../../utils/models/section";
 import Material from "../../utils/models/files";
-import user from "../../utils/models/user";
 import Students_Class from "../../utils/models/student_class";
-const class_router = Router();
+import multer from "multer";
+import { getMulterFields } from "../../utils/tools";
+const classRouter = Router();
 
 
 /* ROUTES: 
- * all need resposane consistency
+ * all need response consistency
 GET:
    admin: 
           all => gives back ALL students FIXED
@@ -64,11 +67,11 @@ MOCK BODY:
 
 
 //! GETS
-
-class_router.get(
-  "/all",
-  // admin,
-  // authorize,
+//ADMIN search for classes
+classRouter.get(
+  "/",
+  authorize,
+  admin,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       // query structure: 
@@ -78,89 +81,96 @@ class_router.get(
       //   users: true,
       //   q: "math"
       // }
-      const { page = 1, limit = 5, users = "false", q = "" } = req.query
-      const classes = await Class.findAll()
+
+      const sqlQuery = q2s(req.query)
+      const classes = await Class.findAll(sqlQuery)
       if (classes.length > 0) {
         res.status(200).send(classes);
-      } else res.status(204);
+      } else res.sendStatus(204);
     } catch (e) {
       next(e);
     }
   }
 );
-// class_router.get(
-//   "/me",
-//   authorize,
-//   teacher,
-//   async (
-//     req: Request,
-//     res: Response,
-//     next: NextFunction
-//   ): Promise<void> => {
-//     try {
-//       const classes = await Class.findAll({
-//         where: {
-//           author: req.user.user_id,
-//         },
-//       });
-//       if (classes.length > 0) {
-//         res.status(200).send(classes);
-//       } else res.send({ status: 204, message: "Nothing here" });
-//     } catch (e) {
-//       next(e);
-//     }
-//   }
-// );
-// class_router.get(
-//   "/me/enrolled",
-//   authorize,
-//   student,
-//   async (
-//     req: Request,
-//     res: Response,
-//     next: NextFunction
-//   ): Promise<void> => {
-//     try {
-//       const classes_stud = await Students_Class.findAll({
-//         where: {
-//           UserUserId: req.user.user_id,
-//         },
-//       });
-//       let classes: Array<Class> = [];
-//       for (let i: number = 0; i < classes_stud.length; i++) {
-//         let s_class = await Class.findAll({
-//           where: {
-//             classId: classes_stud[i].ClassClassId,
-//           },
-//         });
-//         classes = [...classes, ...s_class];
-//       }
-//       if (classes.length > 0) {
-//         res.status(200).send(classes);
-//       } else res.send({ status: 204, message: "Nothing here" });
-//     } catch (e) {
-//       next(e);
-//     }
-//   }
-// );
-
-class_router.get(
-  "/:classId",
-  // authorize,
+//TEACHER get created classes
+classRouter.get(
+  //gives back created classes
+  "/me",
+  authorize,
+  teacher,
   async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
-      await Class.create({ ...req.body, author: req.user.id });
-      res.status(201).send({ message: "Created" });
+      const classes = await Class.findAll({
+        where: {
+          author: req.user.id,
+        }
+      });
+      if (classes.length > 0) {
+        res.status(200).send(classes);
+      } else res.send({ status: 204, message: "Nothing here" });
     } catch (e) {
       next(e);
     }
   }
 );
-class_router.post(
+//STUDENT get enrolled
+classRouter.get(
+  "/me/enrolled",
+  authorize,
+  student,
+  async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const classes_stud = await Students_Class.findAll({
+        where: {
+          UserUserId: req.user.id,
+        },
+      });
+      let classes: Array<Class> = [];
+      for (let i: number = 0; i < classes_stud.length; i++) {
+        let s_class = await Class.findAll({
+          where: {
+            classId: classes_stud[i].ClassClassId,
+          },
+        });
+        classes = [...classes, ...s_class];
+      }
+      if (classes.length > 0) {
+        res.status(200).send(classes);
+      } else res.send({ status: 204, message: "Nothing here" });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+//ALL get specific class
+classRouter.get(
+  "/:classId",
+  authorize,
+  async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const found = await Class.findAll({include: {model: Section, as: "sections"}})
+      res.send(found)
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+
+//ALL search class
+classRouter.post( //why a post
   "/search",
   authorize,
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -181,65 +191,32 @@ class_router.post(
 );
 
 
-class_router.post(
-  "/",
-  // authorize,
-  // teacher,
-  async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const class_to_enroll = await Class.findOne({
-        where: {
-          class_id: req.params.class_id,
-        },
-      });
-      const user = await User.findByPk(req.user.id?.toString());
-      
-      if (class_to_enroll && user) {
-        const enroll = await Students_Class.create({
-          ClassClassId: req.params.class_id,
-          UserUserId: req.user.id,
-        });
-        if (enroll) res.send({ message: "Enrolled" });
-        else res.send({ message: "Something went wrong" });
-      } else res.status(404).send({ message: "User or Class not found" });
-      //await Students_Class.create({ClassClassId: req.params.class_id, UserUserId: req.user.id})
-    } catch (e) {
-      next(e);
-    }
-  }
-);
 
-class_router.get(
-  "/me",
+//! POST
+
+classRouter.post("/", 
+authorize, teacher, admin, 
+multer().fields([{ name: "name" }, { name: "description" }]), 
+async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const newClass = await Class.create({ ...req.body, author: req.user.id })
+    console.log(newClass);
+    
+    res.status(201).send(newClass)
+  } catch (error) {
+    next(error)
+  }
+})
+
+classRouter.post(
+  "/:classId/section",
   authorize,
   teacher,
-  async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    try {
-      const classes = await Class.findAll({
-        where: {
-          author: req.user.id,
-        },
-      });
-      if (classes.length > 0) {
-        res.status(200).send(classes);
-      } else res.send({ status: 204, message: "Nothing here" });
-    } catch (e) {
-      next(e);
-    }
-  }
-);
-class_router.post(
-  "/:classId/section",
-  // authorize,
-  // teacher,
+  multer().fields(getMulterFields(Section.getAttributes(), ["ClassId"])),
   async (
     req: Request,
     res: Response,
@@ -260,15 +237,16 @@ class_router.post(
             ]
         }
         */
-      
+       
+        
       const section = await Section.create({
-        ...req.body.section,
-        ClassClassId: req.params.class_id,
+        ...req.body,
+        ClassId: req.params.classId,
       });
-      
+      res.send(section)
       // if (req.body.files) await Material.create({...req.body.files, section_ref: section.getDataValue("id")});
-     
-      res.status(201).send({ message: "Created", id: section.id });
+
+      // res.status(201).send({ message: "Created", id: section.id });
     } catch (e) {
       next(e);
     }
@@ -276,7 +254,7 @@ class_router.post(
 );
 
 
-class_router.patch(
+classRouter.patch(
   "/:classId",
   // authorize,
   // teacher,
@@ -309,7 +287,7 @@ class_router.patch(
   }
 );
 
-class_router.patch(
+classRouter.patch(
   "/section/:sectionId",
   // authorize,
   // teacher,
@@ -324,7 +302,7 @@ class_router.patch(
         const sections = await Section.findAll({
           where: { ClassClassId: class_found.id },
         });
-       
+
         let section_files = await Material.findAll({
           where: {
             section_ref: {
@@ -332,7 +310,7 @@ class_router.patch(
             },
           },
         });
- 
+
         res
           .status(200)
           .send({
@@ -348,7 +326,7 @@ class_router.patch(
 );
 
 
-class_router.delete(
+classRouter.delete(
   "/:classId",
   // authorize,
   // teacher,
@@ -358,7 +336,7 @@ class_router.delete(
     next: NextFunction
   ): Promise<void> => {
     try {
-      await Class.destroy({where: {id: req.params.classId}});
+      await Class.destroy({ where: { id: req.params.classId } });
       res.status(204);
     } catch (e) {
       next(e);
@@ -367,7 +345,7 @@ class_router.delete(
 );
 
 
-class_router.delete(
+classRouter.delete(
   "/:sectionId",
   // authorize,
   // teacher,
@@ -377,7 +355,7 @@ class_router.delete(
     next: NextFunction
   ): Promise<void> => {
     try {
-      await Class.destroy({where: {id: req.params.sectionId}});
+      await Class.destroy({ where: { id: req.params.sectionId } });
       res.status(204);
     } catch (e) {
       next(e);
@@ -385,4 +363,4 @@ class_router.delete(
   }
 );
 
-export default class_router
+export default classRouter

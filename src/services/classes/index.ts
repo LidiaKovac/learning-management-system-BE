@@ -204,7 +204,6 @@ async (
 ): Promise<void> => {
   try {
     const newClass = await Class.create({ ...req.body, author: req.user.id })
-    console.log(newClass);
     
     res.status(201).send(newClass)
   } catch (error) {

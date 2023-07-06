@@ -110,7 +110,6 @@ filesRouter.post(
         req.body.type === "pdf" ? { contentType: "application/pdf" } 
         : req.body.type === "video" ? { contentType: "video/mp4" } 
         : req.body.type === "audio" ? {contentType :"audio/mp3"} : undefined );
-      console.log(file_ref.getDownloadURL());
 
       const new_file = await Files.create({
         ...req.body,

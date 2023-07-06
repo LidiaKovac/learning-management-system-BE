@@ -1,3 +1,5 @@
+import { FLOAT } from "sequelize"
+import { NUMBER } from "sequelize"
 import {
 	STRING,
 	ENUM,
@@ -12,11 +14,10 @@ import {
 class Event extends Model {
 	id!: string
 	name!: string
-	type!: string
-    description!: string
-	startDate!: String
-    endDate!: String
-	graded!: boolean
+	location!: string
+	building!: string
+	timeStart!: string
+	duration!: number
 
 
 	static initialize(sequelize: Sequelize) {
@@ -28,30 +29,25 @@ class Event extends Model {
 					defaultValue: UUIDV4
 				},
 				name: {
-                    type: STRING(50), 
-                    allowNull: false
-                },
-				type: {
-                    type: STRING(100), 
-                    allowNull: false
-                },
-				graded: {
-					type: BOOLEAN,
-					allowNull: false,
-					defaultValue: false
+					type: STRING(50),
+					allowNull: false
 				},
-				description: {
-                    type: STRING(3000), 
-                    allowNull: true
-                },
-                startDate: {
-                    type: STRING,
-                    allowNull: false
-                },
-                endDate: {
-                    type: STRING,
-                    allowNull: false
-                },
+				location: {
+					type: STRING(100),
+					allowNull: false
+				},
+				timeStart: {
+					type: STRING(100),
+					allowNull: false
+				},
+				building: {
+					type: STRING(3000),
+					allowNull: true
+				},
+				duration: {
+					type: FLOAT,
+					allowNull: true
+				},
 			},
 			{
 				sequelize,

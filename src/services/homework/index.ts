@@ -25,7 +25,6 @@ import Homework from "../../utils/models/homework"
 
 hw_router.post("/:event_id", authorize, student, async(req: Request, res: Response, next: NextFunction):Promise<void> => {
     try {
-        console.log(req.body)
         const new_homework = await Homework.create({content: req.body.content, 
             author: req.user.id, 
             EventEventId: req.params.event_id

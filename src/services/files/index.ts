@@ -1,22 +1,18 @@
-// //GLOBALS for FIREBASE
-(global as any).XMLHttpRequest = require("xhr2");
-(global as any).WebSocket = require("ws");
+// // //GLOBALS for FIREBASE
+// (global as any).XMLHttpRequest = require("xhr2");
+// (global as any).WebSocket = require("ws");
 require("dotenv").config();
 import { config } from "dotenv"
 config()
 
 // //GENERAL
-import { Router } from "express"
 
 import Files from "../../utils/models/files";
 
-import { Request, Response, NextFunction } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { admin, authorize } from "../../middlewares/auth";
 import multer from "multer";
 import Material from "../../utils/models/files";
-// //ENVIRONMENT
-import firebase from "firebase";
-import "firebase/storage";
 import { getMulterFields } from "../../utils/tools";
 const {
   FIREBASE_API_KEY,
@@ -38,7 +34,7 @@ const firebaseConfig = {
   measurementId: FIREBASE_MEASUREMENT_ID,
 };
 
-firebase.initializeApp(firebaseConfig);
+// firebase.initializeApp(firebaseConfig);
 // //FIREBASE / FILE UPLOAD
 
 
@@ -98,25 +94,25 @@ filesRouter.post(
     next: NextFunction
   ): Promise<void> => {
     try {
-      const files = req.files as Express.Multer.File[]
-      const fileTypes = ["image", "pdf", "video", "audio"]
-      if (!fileTypes.includes(req.body.type)) {
-        res.status(400).send("Please enter a valid file type!")
-      }
-      let ref = firebase.storage().ref();
-      let file_ref = ref.child(`/lms_${req.body.type}/${files[0].originalname}`);
-      let bytes = new Uint8Array(files[0].buffer);
-      await file_ref.put(bytes, 
-        req.body.type === "pdf" ? { contentType: "application/pdf" } 
-        : req.body.type === "video" ? { contentType: "video/mp4" } 
-        : req.body.type === "audio" ? {contentType :"audio/mp3"} : undefined );
+      // const files = req.files as Express.Multer.File[]
+      // const fileTypes = ["image", "pdf", "video", "audio"]
+      // if (!fileTypes.includes(req.body.type)) {
+      //   res.status(400).send("Please enter a valid file type!")
+      // }
+      // let ref = firebase.storage().ref();
+      // let file_ref = ref.child(`/lms_${req.body.type}/${files[0].originalname}`);
+      // let bytes = new Uint8Array(files[0].buffer);
+      // await file_ref.put(bytes, 
+      //   req.body.type === "pdf" ? { contentType: "application/pdf" } 
+      //   : req.body.type === "video" ? { contentType: "video/mp4" } 
+      //   : req.body.type === "audio" ? {contentType :"audio/mp3"} : undefined );
 
-      const new_file = await Files.create({
-        ...req.body,
-        file: await file_ref.getDownloadURL(),
-        UserId: req.user.id,
-      });
-      res.status(201).send({ status: 201, path: new_file.file });
+      // const new_file = await Files.create({
+      //   ...req.body,
+      //   file: await file_ref.getDownloadURL(),
+      //   UserId: req.user.id,
+      // });
+      // res.status(201).send({ status: 201, path: new_file.file });
     } catch (e) {
       next(e);
     }

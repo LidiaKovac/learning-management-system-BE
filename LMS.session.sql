@@ -1,1 +1,1 @@
-SELECT * FROM "Users"
+DELETE FROM "Events" WHERE "UserId" IS NULL

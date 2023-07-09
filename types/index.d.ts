@@ -1,3 +1,10 @@
+declare namespace Express {
+	interface Request {
+		user: {
+			id: string, birthday: string, status: string
+		}
+	}
+}
 interface DecodedToken {
 	user_id: number | null
 	birthday: Date | null
@@ -8,12 +15,6 @@ interface CustomError {
 	message: string
 }
 
-declare namespace Express {
-	interface Request {
-		user: {
-			id: string, birthday: string, status: string}
-	}
-}
 
 interface User {
 	id: string
@@ -42,9 +43,8 @@ type DecodedToken = {
 
 interface ApiResponse {
 	status: number
-	message?: string 
+	message?: string
 	data?: any
 }
 
-
-declare module "query-to-sequelize"
+declare module 'query-to-sequelize'
